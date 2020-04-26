@@ -1,155 +1,60 @@
-/*
- * Copyright (c) 1995, 2004, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.util;
 
 /**
- * The <code>Dictionary</code> class is the abstract parent of any
- * class, such as <code>Hashtable</code>, which maps keys to values.
- * Every key and every value is an object. In any one <tt>Dictionary</tt>
- * object, every key is associated with at most one value. Given a
- * <tt>Dictionary</tt> and a key, the associated element can be looked up.
- * Any non-<code>null</code> object can be used as a key and as a value.
- * <p>
- * As a rule, the <code>equals</code> method should be used by
- * implementations of this class to decide if two keys are the same.
- * <p>
- * <strong>NOTE: This class is obsolete.  New implementations should
- * implement the Map interface, rather than extending this class.</strong>
- *
- * @author  unascribed
- * @see     java.util.Map
- * @see     java.lang.Object#equals(java.lang.Object)
- * @see     java.lang.Object#hashCode()
- * @see     java.util.Hashtable
+ * Hashtable 的父类；
+ * 不允许 null 作为 key 和 value。实际存储类需要自行重写 equals 方法
+ * 该类已过时。新的实现应实现 Map接口，而不是扩展此类
  * @since   JDK1.0
  */
 public abstract
 class Dictionary<K,V> {
-    /**
-     * Sole constructor.  (For invocation by subclass constructors, typically
-     * implicit.)
-     */
+    //无参构造器
     public Dictionary() {
     }
 
-    /**
-     * Returns the number of entries (distinct keys) in this dictionary.
-     *
-     * @return  the number of keys in this dictionary.
-     */
+    //返回字典条目数
     abstract public int size();
 
     /**
-     * Tests if this dictionary maps no keys to value. The general contract
-     * for the <tt>isEmpty</tt> method is that the result is true if and only
-     * if this dictionary contains no entries.
-     *
-     * @return  <code>true</code> if this dictionary maps no keys to values;
-     *          <code>false</code> otherwise.
+     * 当且仅当该词典不包含任何条目时，结果才为true。
+     * @return 如果字典没有任何键值对，返回 true;否则返回 false
      */
     abstract public boolean isEmpty();
 
     /**
-     * Returns an enumeration of the keys in this dictionary. The general
-     * contract for the keys method is that an <tt>Enumeration</tt> object
-     * is returned that will generate all the keys for which this dictionary
-     * contains entries.
-     *
-     * @return  an enumeration of the keys in this dictionary.
-     * @see     java.util.Dictionary#elements()
-     * @see     java.util.Enumeration
+     * 返回此字典中键的枚举。 keys方法的一般约定是返回 Enumeration，该对象将生成此词典包含条目的所有键
+     * @return  此字典中的 key键的枚举
      */
     abstract public Enumeration<K> keys();
 
     /**
-     * Returns an enumeration of the values in this dictionary. The general
-     * contract for the <tt>elements</tt> method is that an
-     * <tt>Enumeration</tt> is returned that will generate all the elements
-     * contained in entries in this dictionary.
-     *
-     * @return  an enumeration of the values in this dictionary.
-     * @see     java.util.Dictionary#keys()
-     * @see     java.util.Enumeration
+     * 返回此字典中的值的枚举。elements 方法的一般约定是返回一个 Enumeration，它将生成此词典的条目中包含的所有元素
+     * @return  此字典中的 value值的枚举
      */
     abstract public Enumeration<V> elements();
 
     /**
-     * Returns the value to which the key is mapped in this dictionary.
-     * The general contract for the <tt>isEmpty</tt> method is that if this
-     * dictionary contains an entry for the specified key, the associated
-     * value is returned; otherwise, <tt>null</tt> is returned.
-     *
-     * @return  the value to which the key is mapped in this dictionary;
-     * @param   key   a key in this dictionary.
-     *          <code>null</code> if the key is not mapped to any value in
-     *          this dictionary.
-     * @exception NullPointerException if the <tt>key</tt> is <tt>null</tt>.
-     * @see     java.util.Dictionary#put(java.lang.Object, java.lang.Object)
+     * 返回 key所对应的 value值，若无返回 null
+     * @return 该字典中 key 所映射到的 value值
+     * @param   key  指定 key 值
+     * @exception NullPointerException 如果 key是null，抛出异常
      */
     abstract public V get(Object key);
 
     /**
-     * Maps the specified <code>key</code> to the specified
-     * <code>value</code> in this dictionary. Neither the key nor the
-     * value can be <code>null</code>.
-     * <p>
-     * If this dictionary already contains an entry for the specified
-     * <tt>key</tt>, the value already in this dictionary for that
-     * <tt>key</tt> is returned, after modifying the entry to contain the
-     *  new element. <p>If this dictionary does not already have an entry
-     *  for the specified <tt>key</tt>, an entry is created for the
-     *  specified <tt>key</tt> and <tt>value</tt>, and <tt>null</tt> is
-     *  returned.
-     * <p>
-     * The <code>value</code> can be retrieved by calling the
-     * <code>get</code> method with a <code>key</code> that is equal to
-     * the original <code>key</code>.
-     *
+     * 将指定键值对映射到字典。若字典已经存在该 key，覆盖并返回先前 value
      * @param      key     the hashtable key.
      * @param      value   the value.
-     * @return     the previous value to which the <code>key</code> was mapped
-     *             in this dictionary, or <code>null</code> if the key did not
-     *             have a previous mapping.
-     * @exception  NullPointerException  if the <code>key</code> or
-     *               <code>value</code> is <code>null</code>.
-     * @see        java.lang.Object#equals(java.lang.Object)
-     * @see        java.util.Dictionary#get(java.lang.Object)
+     * @return    此字典中 key映射到的先前值；如果键先前没有映射，则返回 null
+     * @exception  NullPointerException  如果 key 或者 value 是 null
      */
     abstract public V put(K key, V value);
 
     /**
-     * Removes the <code>key</code> (and its corresponding
-     * <code>value</code>) from this dictionary. This method does nothing
-     * if the <code>key</code> is not in this dictionary.
-     *
-     * @param   key   the key that needs to be removed.
-     * @return  the value to which the <code>key</code> had been mapped in this
-     *          dictionary, or <code>null</code> if the key did not have a
-     *          mapping.
-     * @exception NullPointerException if <tt>key</tt> is <tt>null</tt>.
+     * 移除指定 key 的键值对
+     * @param   key  需要被移除的键值对的 key
+     * @return  被移除的指定 key 的 value值；如果这个 key不存在于字典中，返回 null
+     * @exception NullPointerException 如果 key是null，抛出异常
      */
     abstract public V remove(Object key);
 }
