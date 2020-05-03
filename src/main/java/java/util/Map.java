@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.util;
 
 import java.util.function.BiConsumer;
@@ -31,440 +6,170 @@ import java.util.function.Function;
 import java.io.Serializable;
 
 /**
- * An object that maps keys to values.  A map cannot contain duplicate keys;
- * each key can map to at most one value.
- *
- * <p>This interface takes the place of the <tt>Dictionary</tt> class, which
- * was a totally abstract class rather than an interface.
- *
- * <p>The <tt>Map</tt> interface provides three <i>collection views</i>, which
- * allow a map's contents to be viewed as a set of keys, collection of values,
- * or set of key-value mappings.  The <i>order</i> of a map is defined as
- * the order in which the iterators on the map's collection views return their
- * elements.  Some map implementations, like the <tt>TreeMap</tt> class, make
- * specific guarantees as to their order; others, like the <tt>HashMap</tt>
- * class, do not.
- *
- * <p>Note: great care must be exercised if mutable objects are used as map
- * keys.  The behavior of a map is not specified if the value of an object is
- * changed in a manner that affects <tt>equals</tt> comparisons while the
- * object is a key in the map.  A special case of this prohibition is that it
- * is not permissible for a map to contain itself as a key.  While it is
- * permissible for a map to contain itself as a value, extreme caution is
- * advised: the <tt>equals</tt> and <tt>hashCode</tt> methods are no longer
- * well defined on such a map.
- *
- * <p>All general-purpose map implementation classes should provide two
- * "standard" constructors: a void (no arguments) constructor which creates an
- * empty map, and a constructor with a single argument of type <tt>Map</tt>,
- * which creates a new map with the same key-value mappings as its argument.
- * In effect, the latter constructor allows the user to copy any map,
- * producing an equivalent map of the desired class.  There is no way to
- * enforce this recommendation (as interfaces cannot contain constructors) but
- * all of the general-purpose map implementations in the JDK comply.
- *
- * <p>The "destructive" methods contained in this interface, that is, the
- * methods that modify the map on which they operate, are specified to throw
- * <tt>UnsupportedOperationException</tt> if this map does not support the
- * operation.  If this is the case, these methods may, but are not required
- * to, throw an <tt>UnsupportedOperationException</tt> if the invocation would
- * have no effect on the map.  For example, invoking the {@link #putAll(Map)}
- * method on an unmodifiable map may, but is not required to, throw the
- * exception if the map whose mappings are to be "superimposed" is empty.
- *
- * <p>Some map implementations have restrictions on the keys and values they
- * may contain.  For example, some implementations prohibit null keys and
- * values, and some have restrictions on the types of their keys.  Attempting
- * to insert an ineligible key or value throws an unchecked exception,
- * typically <tt>NullPointerException</tt> or <tt>ClassCastException</tt>.
- * Attempting to query the presence of an ineligible key or value may throw an
- * exception, or it may simply return false; some implementations will exhibit
- * the former behavior and some will exhibit the latter.  More generally,
- * attempting an operation on an ineligible key or value whose completion
- * would not result in the insertion of an ineligible element into the map may
- * throw an exception or it may succeed, at the option of the implementation.
- * Such exceptions are marked as "optional" in the specification for this
- * interface.
- *
- * <p>Many methods in Collections Framework interfaces are defined
- * in terms of the {@link Object#equals(Object) equals} method.  For
- * example, the specification for the {@link #containsKey(Object)
- * containsKey(Object key)} method says: "returns <tt>true</tt> if and
- * only if this map contains a mapping for a key <tt>k</tt> such that
- * <tt>(key==null ? k==null : key.equals(k))</tt>." This specification should
- * <i>not</i> be construed to imply that invoking <tt>Map.containsKey</tt>
- * with a non-null argument <tt>key</tt> will cause <tt>key.equals(k)</tt> to
- * be invoked for any key <tt>k</tt>.  Implementations are free to
- * implement optimizations whereby the <tt>equals</tt> invocation is avoided,
- * for example, by first comparing the hash codes of the two keys.  (The
- * {@link Object#hashCode()} specification guarantees that two objects with
- * unequal hash codes cannot be equal.)  More generally, implementations of
- * the various Collections Framework interfaces are free to take advantage of
- * the specified behavior of underlying {@link Object} methods wherever the
- * implementor deems it appropriate.
- *
- * <p>Some map operations which perform recursive traversal of the map may fail
- * with an exception for self-referential instances where the map directly or
- * indirectly contains itself. This includes the {@code clone()},
- * {@code equals()}, {@code hashCode()} and {@code toString()} methods.
- * Implementations may optionally handle the self-referential scenario, however
- * most current implementations do not do so.
- *
- * <p>This interface is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
- *
- * @author  Josh Bloch
- * @see HashMap
- * @see TreeMap
- * @see Hashtable
- * @see SortedMap
- * @see Collection
- * @see Set
+ * 将键映射到值的对象。映射不能包含重复的键； 每个键最多可以映射到一个值。
+ * 代替 抽象类Dictionary
+ * 注意1：将对象作为 MAP的键，需要格外小心。对象的属性变化可能会影响 equals的结果。
+ * 注意2：不要将 Map自身作为键，虽然技术上可行，但是最好不要
  * @since 1.2
  */
 public interface Map<K,V> {
-    // Query Operations
+    // 查询操作
 
-    /**
-     * Returns the number of key-value mappings in this map.  If the
-     * map contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
-     * <tt>Integer.MAX_VALUE</tt>.
-     *
-     * @return the number of key-value mappings in this map
-     */
+    //返回此映射中的键值映射数。如果映射包含超过 Integer.MAX_VALUE个元素，则返回 Integer.MAX_VALUE
     int size();
 
-    /**
-     * Returns <tt>true</tt> if this map contains no key-value mappings.
-     *
-     * @return <tt>true</tt> if this map contains no key-value mappings
-     */
+    //如果不包含任何键值对，则返回 true
     boolean isEmpty();
 
     /**
-     * Returns <tt>true</tt> if this map contains a mapping for the specified
-     * key.  More formally, returns <tt>true</tt> if and only if
-     * this map contains a mapping for a key <tt>k</tt> such that
-     * <tt>(key==null ? k==null : key.equals(k))</tt>.  (There can be
-     * at most one such mapping.)
-     *
-     * @param key key whose presence in this map is to be tested
-     * @return <tt>true</tt> if this map contains a mapping for the specified
-     *         key
-     * @throws ClassCastException if the key is of an inappropriate type for
-     *         this map
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key is null and this map
-     *         does not permit null keys
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * 包含指定 key 则返回true
+     * @param key 需要进行测试的Key
+     * @return 如果包含指定 key 则返回true
+     * @throws ClassCastException key类型不对
+     * @throws NullPointerException key为null,并且map没有key为null的值
      */
     boolean containsKey(Object key);
 
     /**
-     * Returns <tt>true</tt> if this map maps one or more keys to the
-     * specified value.  More formally, returns <tt>true</tt> if and only if
-     * this map contains at least one mapping to a value <tt>v</tt> such that
-     * <tt>(value==null ? v==null : value.equals(v))</tt>.  This operation
-     * will probably require time linear in the map size for most
-     * implementations of the <tt>Map</tt> interface.
-     *
-     * @param value value whose presence in this map is to be tested
-     * @return <tt>true</tt> if this map maps one or more keys to the
-     *         specified value
-     * @throws ClassCastException if the value is of an inappropriate type for
-     *         this map
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified value is null and this
-     *         map does not permit null values
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * 包含指定 value则返回 true
+     * @param value 需要被检测的 value
+     * @return 如果存在返回 true
+     * @throws ClassCastException key类型不对
+     * @throws NullPointerException key为null,并且map没有key为null的值
      */
     boolean containsValue(Object value);
 
     /**
-     * Returns the value to which the specified key is mapped,
-     * or {@code null} if this map contains no mapping for the key.
-     *
-     * <p>More formally, if this map contains a mapping from a key
-     * {@code k} to a value {@code v} such that {@code (key==null ? k==null :
-     * key.equals(k))}, then this method returns {@code v}; otherwise
-     * it returns {@code null}.  (There can be at most one such mapping.)
-     *
-     * <p>If this map permits null values, then a return value of
-     * {@code null} does not <i>necessarily</i> indicate that the map
-     * contains no mapping for the key; it's also possible that the map
-     * explicitly maps the key to {@code null}.  The {@link #containsKey
-     * containsKey} operation may be used to distinguish these two cases.
-     *
+     * 返回指定键所映射到的值；如果此映射不包含键的映射关系，则返回或 null
      * @param key the key whose associated value is to be returned
-     * @return the value to which the specified key is mapped, or
-     *         {@code null} if this map contains no mapping for the key
-     * @throws ClassCastException if the key is of an inappropriate type for
-     *         this map
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key is null and this map
-     *         does not permit null keys
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * @return 返回特定 key对应的 value值；如果不存在则返回 null
+     * @throws ClassCastException key类型不对
+     * @throws NullPointerException key为null,并且map没有key为null的值
      */
     V get(Object key);
 
-    // Modification Operations
+    // 修改操作
 
     /**
-     * Associates the specified value with the specified key in this map
-     * (optional operation).  If the map previously contained a mapping for
-     * the key, the old value is replaced by the specified value.  (A map
-     * <tt>m</tt> is said to contain a mapping for a key <tt>k</tt> if and only
-     * if {@link #containsKey(Object) m.containsKey(k)} would return
-     * <tt>true</tt>.)
-     *
+     * 将指定值与此映射中的指定键关联。如果该映射先前包含键的映射，则旧值将替换为指定值。
      * @param key key with which the specified value is to be associated
      * @param value value to be associated with the specified key
-     * @return the previous value associated with <tt>key</tt>, or
-     *         <tt>null</tt> if there was no mapping for <tt>key</tt>.
-     *         (A <tt>null</tt> return can also indicate that the map
-     *         previously associated <tt>null</tt> with <tt>key</tt>,
-     *         if the implementation supports <tt>null</tt> values.)
-     * @throws UnsupportedOperationException if the <tt>put</tt> operation
-     *         is not supported by this map
-     * @throws ClassCastException if the class of the specified key or value
-     *         prevents it from being stored in this map
-     * @throws NullPointerException if the specified key or value is null
-     *         and this map does not permit null keys or values
-     * @throws IllegalArgumentException if some property of the specified key
-     *         or value prevents it from being stored in this map
+     * @return 如果 key键原先不存在，则返回null，若存在返回原先key对应的 value值
+     * @throws UnsupportedOperationException 如果此映射不支持 put 操作
+     * @throws ClassCastException 如果指定键或值的类使其无法存储在此映射中
+     * @throws NullPointerException key为null,并且map没有key为null的值
+     * @throws IllegalArgumentException 如果指定键或值的某些属性阻止将其存储在此映射中
      */
     V put(K key, V value);
 
     /**
-     * Removes the mapping for a key from this map if it is present
-     * (optional operation).   More formally, if this map contains a mapping
-     * from key <tt>k</tt> to value <tt>v</tt> such that
-     * <code>(key==null ?  k==null : key.equals(k))</code>, that mapping
-     * is removed.  (The map can contain at most one such mapping.)
-     *
-     * <p>Returns the value to which this map previously associated the key,
-     * or <tt>null</tt> if the map contained no mapping for the key.
-     *
-     * <p>If this map permits null values, then a return value of
-     * <tt>null</tt> does not <i>necessarily</i> indicate that the map
-     * contained no mapping for the key; it's also possible that the map
-     * explicitly mapped the key to <tt>null</tt>.
-     *
-     * <p>The map will not contain a mapping for the specified key once the
-     * call returns.
-     *
+     * 根据 key移除键值对，并返回原value
      * @param key key whose mapping is to be removed from the map
-     * @return the previous value associated with <tt>key</tt>, or
-     *         <tt>null</tt> if there was no mapping for <tt>key</tt>.
-     * @throws UnsupportedOperationException if the <tt>remove</tt> operation
-     *         is not supported by this map
-     * @throws ClassCastException if the key is of an inappropriate type for
-     *         this map
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key is null and this
-     *         map does not permit null keys
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * @return 返回 key对应的 value值；若不存在返回null
+     * @throws UnsupportedOperationException 如果当前map没有实现 remove操作
+     * @throws ClassCastException 如果 key的类型不符合此 Map
+     * @throws NullPointerException key为null,并且map没有key为null的值
      */
     V remove(Object key);
 
 
-    // Bulk Operations
+    // 批量操作
 
     /**
-     * Copies all of the mappings from the specified map to this map
-     * (optional operation).  The effect of this call is equivalent to that
-     * of calling {@link #put(Object,Object) put(k, v)} on this map once
-     * for each mapping from key <tt>k</tt> to value <tt>v</tt> in the
-     * specified map.  The behavior of this operation is undefined if the
-     * specified map is modified while the operation is in progress.
-     *
-     * @param m mappings to be stored in this map
-     * @throws UnsupportedOperationException if the <tt>putAll</tt> operation
-     *         is not supported by this map
-     * @throws ClassCastException if the class of a key or value in the
-     *         specified map prevents it from being stored in this map
-     * @throws NullPointerException if the specified map is null, or if
-     *         this map does not permit null keys or values, and the
-     *         specified map contains null keys or values
-     * @throws IllegalArgumentException if some property of a key or value in
-     *         the specified map prevents it from being stored in this map
+     * 批量存储
+     * @param m 需要存储的 map
+     * @throws UnsupportedOperationException 如果此 map没有提供该方法
+     * @throws ClassCastException 类型不匹配
+     * @throws NullPointerException map为null，或者map不允许 null键或值，但是参数 m允许了null
+     * @throws IllegalArgumentException 如果指定键或值的某些属性阻止将其存储在此映射中
      */
     void putAll(Map<? extends K, ? extends V> m);
 
     /**
-     * Removes all of the mappings from this map (optional operation).
-     * The map will be empty after this call returns.
-     *
-     * @throws UnsupportedOperationException if the <tt>clear</tt> operation
-     *         is not supported by this map
+     * 移除全部键值对
+     * @throws UnsupportedOperationException 如果此 map没有提供该方法
      */
     void clear();
 
 
-    // Views
+    // 遍历
 
     /**
-     * Returns a {@link Set} view of the keys contained in this map.
-     * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  If the map is modified
-     * while an iteration over the set is in progress (except through
-     * the iterator's own <tt>remove</tt> operation), the results of
-     * the iteration are undefined.  The set supports element removal,
-     * which removes the corresponding mapping from the map, via the
-     * <tt>Iterator.remove</tt>, <tt>Set.remove</tt>,
-     * <tt>removeAll</tt>, <tt>retainAll</tt>, and <tt>clear</tt>
-     * operations.  It does not support the <tt>add</tt> or <tt>addAll</tt>
-     * operations.
-     *
-     * @return a set view of the keys contained in this map
+     * 返回 map包含的所有 key 的 set视图；
+     * set集合由 map支持，对 map的更改会在 set中反映，反之亦然。
+     * 如果在对 set 进行迭代时修改了 map（通过迭代器自己的 remove操作除外），则迭代的结果是不确定。
+     * set集合支持元素删除，通过 Iterator.remove， Set.remove， removeAll从 map中删除相应的映射，retainAll 和 clear操作。
+     * 它不应该支持 add 或 addAll 操作。
+     * @return 返回 map包含的所有 key 的 set视图
      */
     Set<K> keySet();
 
     /**
-     * Returns a {@link Collection} view of the values contained in this map.
-     * The collection is backed by the map, so changes to the map are
-     * reflected in the collection, and vice-versa.  If the map is
-     * modified while an iteration over the collection is in progress
-     * (except through the iterator's own <tt>remove</tt> operation),
-     * the results of the iteration are undefined.  The collection
-     * supports element removal, which removes the corresponding
-     * mapping from the map, via the <tt>Iterator.remove</tt>,
-     * <tt>Collection.remove</tt>, <tt>removeAll</tt>,
-     * <tt>retainAll</tt> and <tt>clear</tt> operations.  It does not
-     * support the <tt>add</tt> or <tt>addAll</tt> operations.
-     *
-     * @return a collection view of the values contained in this map
+     * 返回当前 map的所有 value的 collection集合。
+     * 其余特性和 keySet 相同。
+     * @return 返回当前 map的所有 value的 collection集合。
      */
     Collection<V> values();
 
     /**
-     * Returns a {@link Set} view of the mappings contained in this map.
-     * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  If the map is modified
-     * while an iteration over the set is in progress (except through
-     * the iterator's own <tt>remove</tt> operation, or through the
-     * <tt>setValue</tt> operation on a map entry returned by the
-     * iterator) the results of the iteration are undefined.  The set
-     * supports element removal, which removes the corresponding
-     * mapping from the map, via the <tt>Iterator.remove</tt>,
-     * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt> and
-     * <tt>clear</tt> operations.  It does not support the
-     * <tt>add</tt> or <tt>addAll</tt> operations.
-     *
-     * @return a set view of the mappings contained in this map
+     * 返回 键值对 set集合，Entry为内部类
+     * @return 返回 键值对 set集合
      */
     Set<Map.Entry<K, V>> entrySet();
 
     /**
-     * A map entry (key-value pair).  The <tt>Map.entrySet</tt> method returns
-     * a collection-view of the map, whose elements are of this class.  The
-     * <i>only</i> way to obtain a reference to a map entry is from the
-     * iterator of this collection-view.  These <tt>Map.Entry</tt> objects are
-     * valid <i>only</i> for the duration of the iteration; more formally,
-     * the behavior of a map entry is undefined if the backing map has been
-     * modified after the entry was returned by the iterator, except through
-     * the <tt>setValue</tt> operation on the map entry.
-     *
-     * @see Map#entrySet()
+     * map的 键值对。Map.entrySet方法返回的就是 map的 Entry 的 Set集合。
+     * 获取 Map.Entry 引用的唯一方法是从此迭代器中获取。
+     * 这些 Map.Entry对象在迭代过程中仅有效；如果迭代器返回条目后，已经修改了原map，则该 entry的行为是不确定的，除非通过该 entry的 setValue操作。
      * @since 1.2
      */
     interface Entry<K,V> {
         /**
-         * Returns the key corresponding to this entry.
-         *
-         * @return the key corresponding to this entry
-         * @throws IllegalStateException implementations may, but are not
-         *         required to, throw this exception if the entry has been
-         *         removed from the backing map.
+         * @return 本条键值对的 key
+         * @throws IllegalStateException 如果这个 entry 在原 map中已经被移除；没有强制要求实现。
          */
         K getKey();
 
         /**
-         * Returns the value corresponding to this entry.  If the mapping
-         * has been removed from the backing map (by the iterator's
-         * <tt>remove</tt> operation), the results of this call are undefined.
-         *
-         * @return the value corresponding to this entry
-         * @throws IllegalStateException implementations may, but are not
-         *         required to, throw this exception if the entry has been
-         *         removed from the backing map.
+         * 返回与此 entry对应的value。如果已从 map中删除（通过迭代器的 remove操作），则此调用的结果是不确定的。
+         * @return 返回与此 entry对应的value
+         * @throws IllegalStateException 如果这个 entry 在原 map中已经被移除；没有强制要求实现。
          */
         V getValue();
 
         /**
-         * Replaces the value corresponding to this entry with the specified
-         * value (optional operation).  (Writes through to the map.)  The
-         * behavior of this call is undefined if the mapping has already been
-         * removed from the map (by the iterator's <tt>remove</tt> operation).
+         * 用指定的值替换与此原有值，并写入 map（可选操作）
          *
-         * @param value new value to be stored in this entry
-         * @return old value corresponding to the entry
-         * @throws UnsupportedOperationException if the <tt>put</tt> operation
-         *         is not supported by the backing map
-         * @throws ClassCastException if the class of the specified value
-         *         prevents it from being stored in the backing map
-         * @throws NullPointerException if the backing map does not permit
-         *         null values, and the specified value is null
-         * @throws IllegalArgumentException if some property of this value
-         *         prevents it from being stored in the backing map
-         * @throws IllegalStateException implementations may, but are not
-         *         required to, throw this exception if the entry has been
-         *         removed from the backing map.
+         * @param value 需要添加的新 value
+         * @return 返回此 entry原有 value
+         * @throws UnsupportedOperationException 如果原 map不支持 put操作
+         * @throws ClassCastException 类型不匹配
+         * @throws NullPointerException 若原 map不支持 null值，并且参数值为null
+         * @throws IllegalArgumentException 如果参数不支持当前 map
+         * @throws IllegalStateException 如果这个 entry 在原 map中已经被移除；没有强制要求实现。
          */
         V setValue(V value);
 
         /**
-         * Compares the specified object with this entry for equality.
-         * Returns <tt>true</tt> if the given object is also a map entry and
-         * the two entries represent the same mapping.  More formally, two
-         * entries <tt>e1</tt> and <tt>e2</tt> represent the same mapping
-         * if<pre>
-         *     (e1.getKey()==null ?
-         *      e2.getKey()==null : e1.getKey().equals(e2.getKey()))  &amp;&amp;
-         *     (e1.getValue()==null ?
-         *      e2.getValue()==null : e1.getValue().equals(e2.getValue()))
-         * </pre>
-         * This ensures that the <tt>equals</tt> method works properly across
-         * different implementations of the <tt>Map.Entry</tt> interface.
-         *
-         * @param o object to be compared for equality with this map entry
-         * @return <tt>true</tt> if the specified object is equal to this map
-         *         entry
+         * entry的 key 和 value 都相等，则返回true
+         * @param o 需要和本条 entry 比较的对象
+         * @return 如果相同返回true
          */
         boolean equals(Object o);
 
         /**
-         * Returns the hash code value for this map entry.  The hash code
-         * of a map entry <tt>e</tt> is defined to be: <pre>
-         *     (e.getKey()==null   ? 0 : e.getKey().hashCode()) ^
-         *     (e.getValue()==null ? 0 : e.getValue().hashCode())
-         * </pre>
-         * This ensures that <tt>e1.equals(e2)</tt> implies that
-         * <tt>e1.hashCode()==e2.hashCode()</tt> for any two Entries
-         * <tt>e1</tt> and <tt>e2</tt>, as required by the general
-         * contract of <tt>Object.hashCode</tt>.
-         *
-         * @return the hash code value for this map entry
-         * @see Object#hashCode()
-         * @see Object#equals(Object)
-         * @see #equals(Object)
+         * hashcode计算方式： （e.getKey()==null   ? 0 : e.getKey().hashCode()) ^ (e.getValue()==null ? 0 : e.getValue().hashCode())
+         * @return 本条 entry 的hashcode
          */
         int hashCode();
 
         /**
-         * Returns a comparator that compares {@link Map.Entry} in natural order on key.
-         *
-         * <p>The returned comparator is serializable and throws {@link
-         * NullPointerException} when comparing an entry with a null key.
+         * 返回 key的自然顺序比较器
+         * 比较器需要可序列化，并且比较 null键时抛出 NullPointerException
          *
          * @param  <K> the {@link Comparable} type of then map keys
          * @param  <V> the type of the map values
-         * @return a comparator that compares {@link Map.Entry} in natural order on key.
-         * @see Comparable
+         * @return 自然顺序比较器，用于比较 Map.Entry上的键
          * @since 1.8
          */
         public static <K extends Comparable<? super K>, V> Comparator<Map.Entry<K,V>> comparingByKey() {
@@ -473,15 +178,12 @@ public interface Map<K,V> {
         }
 
         /**
-         * Returns a comparator that compares {@link Map.Entry} in natural order on value.
-         *
-         * <p>The returned comparator is serializable and throws {@link
-         * NullPointerException} when comparing an entry with null values.
+         * 返回 value的自然顺序比较器
+         * 比较器需要可序列化，并且比较 null 值时抛出 NullPointerException
          *
          * @param <K> the type of the map keys
          * @param <V> the {@link Comparable} type of the map values
-         * @return a comparator that compares {@link Map.Entry} in natural order on value.
-         * @see Comparable
+         * @return 自然顺序比较器，用于比较 Map.Entry上的值
          * @since 1.8
          */
         public static <K, V extends Comparable<? super V>> Comparator<Map.Entry<K,V>> comparingByValue() {
@@ -490,11 +192,8 @@ public interface Map<K,V> {
         }
 
         /**
-         * Returns a comparator that compares {@link Map.Entry} by key using the given
-         * {@link Comparator}.
-         *
-         * <p>The returned comparator is serializable if the specified comparator
-         * is also serializable.
+         * 返回一个比较器，该比较器使用给定的 cmp通过 key比较
+         * 比较器需要可序列化，cmp也需序列化
          *
          * @param  <K> the type of the map keys
          * @param  <V> the type of the map values
@@ -509,11 +208,8 @@ public interface Map<K,V> {
         }
 
         /**
-         * Returns a comparator that compares {@link Map.Entry} by value using the given
-         * {@link Comparator}.
-         *
-         * <p>The returned comparator is serializable if the specified comparator
-         * is also serializable.
+         * 返回一个比较器，该比较器使用给定的 cmp通过 value比较
+         * 比较器需要可序列化，cmp也需序列化
          *
          * @param  <K> the type of the map keys
          * @param  <V> the type of the map values
@@ -528,91 +224,51 @@ public interface Map<K,V> {
         }
     }
 
-    // Comparison and hashing
+    // 比较和哈希
 
     /**
-     * Compares the specified object with this map for equality.  Returns
-     * <tt>true</tt> if the given object is also a map and the two maps
-     * represent the same mappings.  More formally, two maps <tt>m1</tt> and
-     * <tt>m2</tt> represent the same mappings if
-     * <tt>m1.entrySet().equals(m2.entrySet())</tt>.  This ensures that the
-     * <tt>equals</tt> method works properly across different implementations
-     * of the <tt>Map</tt> interface.
-     *
-     * @param o object to be compared for equality with this map
-     * @return <tt>true</tt> if the specified object is equal to this map
+     * 比较两个 map是否相同；需要进行 entrySet 遍历比较，全部相同才行
+     * @param o 需要比较的对象
+     * @return 如果比较对象和当前map相等，返回true
      */
     boolean equals(Object o);
 
     /**
-     * Returns the hash code value for this map.  The hash code of a map is
-     * defined to be the sum of the hash codes of each entry in the map's
-     * <tt>entrySet()</tt> view.  This ensures that <tt>m1.equals(m2)</tt>
-     * implies that <tt>m1.hashCode()==m2.hashCode()</tt> for any two maps
-     * <tt>m1</tt> and <tt>m2</tt>, as required by the general contract of
-     * {@link Object#hashCode}.
-     *
-     * @return the hash code value for this map
-     * @see Map.Entry#hashCode()
-     * @see Object#equals(Object)
-     * @see #equals(Object)
+     * 返回当前 map 的hashcode。当前map的 hashcode为 每个 entry的 hashcode之和。
+     * @return 当前 map 的hashcode
      */
     int hashCode();
 
-    // Defaultable methods
+    // 默认方法
 
     /**
-     * Returns the value to which the specified key is mapped, or
-     * {@code defaultValue} if this map contains no mapping for the key.
-     *
-     * @implSpec
-     * The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
+     * 返回指定 key对应的 value值，如果为不存在指定 key或者为值为 null,返回默认 defaultValue
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
      *
      * @param key the key whose associated value is to be returned
-     * @param defaultValue the default mapping of the key
-     * @return the value to which the specified key is mapped, or
-     * {@code defaultValue} if this map contains no mapping for the key
-     * @throws ClassCastException if the key is of an inappropriate type for
-     * this map
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key is null and this map
-     * does not permit null keys
-     * (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * @param defaultValue 参数 key 默认的value值，如果 key 不存在
+     * @return 指定 key对应的 value值，如果为不存在指定 key或者为值为 null,返回默认 defaultValue
+     * @throws ClassCastException key类型不兼容这个map
+     * @throws NullPointerException 若原 map不支持 null值，并且参数值为null
      * @since 1.8
      */
     default V getOrDefault(Object key, V defaultValue) {
         V v;
-        return (((v = get(key)) != null) || containsKey(key))
-            ? v
-            : defaultValue;
+        return (((v = get(key)) != null) || containsKey(key)) ? v : defaultValue;
     }
 
     /**
-     * Performs the given action for each entry in this map until all entries
-     * have been processed or the action throws an exception.   Unless
-     * otherwise specified by the implementing class, actions are performed in
-     * the order of entry set iteration (if an iteration order is specified.)
-     * Exceptions thrown by the action are relayed to the caller.
-     *
-     * @implSpec
-     * The default implementation is equivalent to, for this {@code map}:
+     * 在此map中为每个entry执行给定的操作，直到所有条目已被处理或该操作引发异常。
+     * 除非由实现类另外指定，否则操作将按照输入集迭代的顺序执行（如果指定了迭代顺序。）操作引发的异常将中继到调用者。
+     * 该方法等价于:
      * <pre> {@code
      * for (Map.Entry<K, V> entry : map.entrySet())
      *     action.accept(entry.getKey(), entry.getValue());
      * }</pre>
-     *
-     * The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     *
-     * @param action The action to be performed for each entry
-     * @throws NullPointerException if the specified action is null
-     * @throws ConcurrentModificationException if an entry is found to be
-     * removed during iteration
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
+     * @param action 每个entry要执行的操作action
+     * @throws NullPointerException 如果参数为null
+     * @throws ConcurrentModificationException 如果发现entry在迭代过程中被删除
      * @since 1.8
      */
     default void forEach(BiConsumer<? super K, ? super V> action) {
@@ -624,7 +280,7 @@ public interface Map<K,V> {
                 k = entry.getKey();
                 v = entry.getValue();
             } catch(IllegalStateException ise) {
-                // this usually means the entry is no longer in the map.
+                // 这通常意味着 entry不再在 map中。
                 throw new ConcurrentModificationException(ise);
             }
             action.accept(k, v);
@@ -632,42 +288,20 @@ public interface Map<K,V> {
     }
 
     /**
-     * Replaces each entry's value with the result of invoking the given
-     * function on that entry until all entries have been processed or the
-     * function throws an exception.  Exceptions thrown by the function are
-     * relayed to the caller.
-     *
-     * @implSpec
-     * <p>The default implementation is equivalent to, for this {@code map}:
+     * 遍历map,用给定 function传入entry的key和value，并用function的返回值替换原value。直到处理完所有条目或函数引发异常为止。
+     * 该方法等价于:
      * <pre> {@code
      * for (Map.Entry<K, V> entry : map.entrySet())
      *     entry.setValue(function.apply(entry.getKey(), entry.getValue()));
      * }</pre>
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
      *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     *
-     * @param function the function to apply to each entry
-     * @throws UnsupportedOperationException if the {@code set} operation
-     * is not supported by this map's entry set iterator.
-     * @throws ClassCastException if the class of a replacement value
-     * prevents it from being stored in this map
-     * @throws NullPointerException if the specified function is null, or the
-     * specified replacement value is null, and this map does not permit null
-     * values
-     * @throws ClassCastException if a replacement value is of an inappropriate
-     *         type for this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if function or a replacement value is null,
-     *         and this map does not permit null keys or values
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws IllegalArgumentException if some property of a replacement value
-     *         prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ConcurrentModificationException if an entry is found to be
-     * removed during iteration
+     * @param function 应用于每个entry的功能
+     * @throws UnsupportedOperationException 如果此map的entry迭代器不支持 set操作。
+     * @throws ClassCastException 类型不匹配
+     * @throws NullPointerException 如果指定的函数为null，或者指定的替换值为null，并且此映射不允许 null值
+     * @throws IllegalArgumentException 如果某些参数不支持当前 map
+     * @throws ConcurrentModificationException 如果发现entry在迭代过程中被删除
      * @since 1.8
      */
     default void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
@@ -679,63 +313,37 @@ public interface Map<K,V> {
                 k = entry.getKey();
                 v = entry.getValue();
             } catch(IllegalStateException ise) {
-                // this usually means the entry is no longer in the map.
+                // 这通常意味着 entry不再在 map中。
                 throw new ConcurrentModificationException(ise);
             }
-
-            // ise thrown from function is not a cme.
             v = function.apply(k, v);
-
             try {
                 entry.setValue(v);
             } catch(IllegalStateException ise) {
-                // this usually means the entry is no longer in the map.
+                // 这通常意味着 entry不再在 map中。
                 throw new ConcurrentModificationException(ise);
             }
         }
     }
 
     /**
-     * If the specified key is not already associated with a value (or is mapped
-     * to {@code null}) associates it with the given value and returns
-     * {@code null}, else returns the current value.
-     *
-     * @implSpec
-     * The default implementation is equivalent to, for this {@code
-     * map}:
-     *
+     * 如果参数 key不存在，或者其值为null;将新的 key-value 保存到 map,并但会原 value值
+     * 该方法等价于:
      * <pre> {@code
      * V v = map.get(key);
      * if (v == null)
      *     v = map.put(key, value);
-     *
      * return v;
      * }</pre>
-     *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
      *
      * @param key key with which the specified value is to be associated
      * @param value value to be associated with the specified key
-     * @return the previous value associated with the specified key, or
-     *         {@code null} if there was no mapping for the key.
-     *         (A {@code null} return can also indicate that the map
-     *         previously associated {@code null} with the key,
-     *         if the implementation supports null values.)
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the key or value is of an inappropriate
-     *         type for this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key or value is null,
-     *         and this map does not permit null keys or values
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws IllegalArgumentException if some property of the specified key
-     *         or value prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * @return 如果参数 key不存在，或者其值为null;将新的 key-value 保存到 map,并但会原 value值
+     * @throws UnsupportedOperationException 如果这个map不支持添加操作
+     * @throws ClassCastException key或者value类型不兼容
+     * @throws NullPointerException 如果 key 或者 value 是 null，并且当前map不允许 null
+     * @throws IllegalArgumentException 如果某些参数不支持当前 map
      * @since 1.8
      */
     default V putIfAbsent(K key, V value) {
@@ -743,17 +351,12 @@ public interface Map<K,V> {
         if (v == null) {
             v = put(key, value);
         }
-
         return v;
     }
 
     /**
-     * Removes the entry for the specified key only if it is currently
-     * mapped to the specified value.
-     *
-     * @implSpec
-     * The default implementation is equivalent to, for this {@code map}:
-     *
+     * 如果传入key的键值和传入value相同，则移除
+     * 该方法等价于:
      * <pre> {@code
      * if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
      *     map.remove(key);
@@ -761,28 +364,18 @@ public interface Map<K,V> {
      * } else
      *     return false;
      * }</pre>
-     *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     *
-     * @param key key with which the specified value is associated
-     * @param value value expected to be associated with the specified key
-     * @return {@code true} if the value was removed
-     * @throws UnsupportedOperationException if the {@code remove} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the key or value is of an inappropriate
-     *         type for this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key or value is null,
-     *         and this map does not permit null keys or values
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
+     * @param key 指定的 key键
+     * @param value 指定 key期望相对应的 value值
+     * @return 移除成功返回 true
+     * @throws UnsupportedOperationException 如果这个map不支持添加操作
+     * @throws ClassCastException key或者value类型不兼容
+     * @throws NullPointerException 如果 key 或者 value 是 null，并且当前map不允许 null
      * @since 1.8
      */
     default boolean remove(Object key, Object value) {
         Object curValue = get(key);
+        //如果当前map内的键值和参数value不想等，或则简直为空，或者不包含key，返回false
         if (!Objects.equals(curValue, value) ||
             (curValue == null && !containsKey(key))) {
             return false;
@@ -792,12 +385,8 @@ public interface Map<K,V> {
     }
 
     /**
-     * Replaces the entry for the specified key only if currently
-     * mapped to the specified value.
-     *
-     * @implSpec
-     * The default implementation is equivalent to, for this {@code map}:
-     *
+     * 如果传入key的键值和传入oldValue相同，则替换为新 newValue
+     * 该方法等价于:
      * <pre> {@code
      * if (map.containsKey(key) && Objects.equals(map.get(key), value)) {
      *     map.put(key, newValue);
@@ -806,31 +395,17 @@ public interface Map<K,V> {
      *     return false;
      * }</pre>
      *
-     * The default implementation does not throw NullPointerException
-     * for maps that do not support null values if oldValue is null unless
-     * newValue is also null.
+     * 默认实现没有抛出 NullPointerException，如果map不允许null值，需要自行实现
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
      *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
-     *
-     * @param key key with which the specified value is associated
-     * @param oldValue value expected to be associated with the specified key
-     * @param newValue value to be associated with the specified key
-     * @return {@code true} if the value was replaced
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the class of a specified key or value
-     *         prevents it from being stored in this map
-     * @throws NullPointerException if a specified key or newValue is null,
-     *         and this map does not permit null keys or values
-     * @throws NullPointerException if oldValue is null and this map does not
-     *         permit null values
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws IllegalArgumentException if some property of a specified key
-     *         or value prevents it from being stored in this map
+     * @param key 指定的 key键
+     * @param oldValue 指定 key期望相对应的 value值
+     * @param newValue 需要替换为的新 value值
+     * @return 如果替换成功返回 true
+     * @throws UnsupportedOperationException 如果这个map不支持添加操作
+     * @throws ClassCastException key或者value类型不兼容
+     * @throws NullPointerException 如果 key、value、newValue 是 null，并且当前map不允许 null
+     * @throws IllegalArgumentException 如果某些参数不支持当前 map
      * @since 1.8
      */
     default boolean replace(K key, V oldValue, V newValue) {
@@ -844,41 +419,23 @@ public interface Map<K,V> {
     }
 
     /**
-     * Replaces the entry for the specified key only if it is
-     * currently mapped to some value.
-     *
-     * @implSpec
-     * The default implementation is equivalent to, for this {@code map}:
-     *
+     * 如果key存在，并且不为null，则将键值替换为 value
+     * 该方法等价于:
      * <pre> {@code
      * if (map.containsKey(key)) {
      *     return map.put(key, value);
      * } else
      *     return null;
      * }</pre>
-     *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties.
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
       *
-     * @param key key with which the specified value is associated
-     * @param value value to be associated with the specified key
-     * @return the previous value associated with the specified key, or
-     *         {@code null} if there was no mapping for the key.
-     *         (A {@code null} return can also indicate that the map
-     *         previously associated {@code null} with the key,
-     *         if the implementation supports null values.)
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the class of the specified key or value
-     *         prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key or value is null,
-     *         and this map does not permit null keys or values
-     * @throws IllegalArgumentException if some property of the specified key
-     *         or value prevents it from being stored in this map
+     * @param key 指定的 key键
+     * @param value 指定 key需要被替换的 value值
+     * @return 操作成功，返回原键值
+     * @throws UnsupportedOperationException 如果这个map不支持添加操作
+     * @throws ClassCastException 如果 key或value 的类型不符合此 Map
+     * @throws NullPointerException 如果 key、value 是 null，并且当前map不允许 null
+     * @throws IllegalArgumentException 如果某些参数不支持当前 map
      * @since 1.8
      */
     default V replace(K key, V value) {
@@ -890,33 +447,22 @@ public interface Map<K,V> {
     }
 
     /**
-     * If the specified key is not already associated with a value (or is mapped
-     * to {@code null}), attempts to compute its value using the given mapping
-     * function and enters it into this map unless {@code null}.
      *
-     * <p>If the function returns {@code null} no mapping is recorded. If
-     * the function itself throws an (unchecked) exception, the
-     * exception is rethrown, and no mapping is recorded.  The most
-     * common usage is to construct a new object serving as an initial
-     * mapped value or memoized result, as in:
+     * 如果传入 key的对应键值为null, 使用传入方法 mappingFunction重新计算 value值(新value值为null则跳出)，并 put进map
      *
+     * <p>如果函数返回null，则不会记录任何映射。
+     * 如果该函数本身引发（未经检查的）异常，则将抛出该异常，并且不记录任何映射。
+     * 最常见的用法是构造一个新对象，用作初始映射值或备注化的结果，如下所示：
      * <pre> {@code
      * map.computeIfAbsent(key, k -> new Value(f(k)));
      * }</pre>
      *
-     * <p>Or to implement a multi-value map, {@code Map<K,Collection<V>>},
-     * supporting multiple values per key:
-     *
+     * <p>或者实施多值映射，支持每个键多个值：
      * <pre> {@code
      * map.computeIfAbsent(key, k -> new HashSet<V>()).add(v);
      * }</pre>
      *
-     *
-     * @implSpec
-     * The default implementation is equivalent to the following steps for this
-     * {@code map}, then returning the current value or {@code null} if now
-     * absent:
-     *
+     * 默认实现等效于此 map的以下步骤，然后返回当前值；如果现在不存在，则返回 null：
      * <pre> {@code
      * if (map.get(key) == null) {
      *     V newValue = mappingFunction.apply(key);
@@ -925,31 +471,17 @@ public interface Map<K,V> {
      * }
      * }</pre>
      *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties. In particular, all implementations of
-     * subinterface {@link java.util.concurrent.ConcurrentMap} must document
-     * whether the function is applied once atomically only if the value is not
-     * present.
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
      *
-     * @param key key with which the specified value is to be associated
-     * @param mappingFunction the function to compute a value
-     * @return the current (existing or computed) value associated with
-     *         the specified key, or null if the computed value is null
-     * @throws NullPointerException if the specified key is null and
-     *         this map does not support null keys, or the mappingFunction
-     *         is null
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the class of the specified key or value
-     *         prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * @param key 指定的 key键
+     * @param mappingFunction 补充 value值的方法
+     * @return 与指定键关联的当前值；如果计算的值为null，则返回null
+     * @throws NullPointerException 如果指定 key是 null并且当前 map不允许 null作为key;或者mappingFunction为 null
+     * @throws UnsupportedOperationException 如果这个map不支持添加操作
+     * @throws ClassCastException 如果 key或value 的类型不符合此 Map
      * @since 1.8
      */
-    default V computeIfAbsent(K key,
-            Function<? super K, ? extends V> mappingFunction) {
+    default V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
         V v;
         if ((v = get(key)) == null) {
@@ -959,23 +491,15 @@ public interface Map<K,V> {
                 return newValue;
             }
         }
-
         return v;
     }
 
     /**
-     * If the value for the specified key is present and non-null, attempts to
-     * compute a new mapping given the key and its current mapped value.
+     * 1. 如果指定 key的键值不为null,通过 remappingFunction获得新键值；为null则直接返回null
+     * 2. 如果新键值不为null，替换原有键值；
+     * 3. 如果新键值为null,移除原有键值对
      *
-     * <p>If the function returns {@code null}, the mapping is removed.  If the
-     * function itself throws an (unchecked) exception, the exception is
-     * rethrown, and the current mapping is left unchanged.
-    *
-     * @implSpec
-     * The default implementation is equivalent to performing the following
-     * steps for this {@code map}, then returning the current value or
-     * {@code null} if now absent:
-     *
+     * 默认实现等效于对此 map执行以下步骤，然后返回当前值；如果现在不存在，则返回 null：
      * <pre> {@code
      * if (map.get(key) != null) {
      *     V oldValue = map.get(key);
@@ -986,27 +510,13 @@ public interface Map<K,V> {
      *         map.remove(key);
      * }
      * }</pre>
-     *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties. In particular, all implementations of
-     * subinterface {@link java.util.concurrent.ConcurrentMap} must document
-     * whether the function is applied once atomically only if the value is not
-     * present.
-     *
-     * @param key key with which the specified value is to be associated
-     * @param remappingFunction the function to compute a value
-     * @return the new value associated with the specified key, or null if none
-     * @throws NullPointerException if the specified key is null and
-     *         this map does not support null keys, or the
-     *         remappingFunction is null
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the class of the specified key or value
-     *         prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
+     * @param key 指定的 key键
+     * @param remappingFunction 补充 value值的方法
+     * @return 与指定 key关联的新 value值；如果没有，则为null
+     * @throws NullPointerException 如果指定 key为 null并且这个map不允许key为null,或者 remappingFunction是null
+     * @throws UnsupportedOperationException 如果这个map不支持添加操作
+     * @throws ClassCastException 如果 key或value 的类型不符合此 Map
      * @since 1.8
      */
     default V computeIfPresent(K key,
@@ -1028,25 +538,15 @@ public interface Map<K,V> {
     }
 
     /**
-     * Attempts to compute a mapping for the specified key and its current
-     * mapped value (or {@code null} if there is no current mapping). For
-     * example, to either create or append a {@code String} msg to a value
-     * mapping:
+     * 1. 获得指定 key原有的键值，计算该 key的新键值
+     * 2. 如果新键值为 null并且旧简直存在且不为null，移除该键值对，返回null
+     * 3. 如果新键值不为 null,替换老键值并返回新简直
      *
      * <pre> {@code
      * map.compute(key, (k, v) -> (v == null) ? msg : v.concat(msg))}</pre>
      * (Method {@link #merge merge()} is often simpler to use for such purposes.)
      *
-     * <p>If the function returns {@code null}, the mapping is removed (or
-     * remains absent if initially absent).  If the function itself throws an
-     * (unchecked) exception, the exception is rethrown, and the current mapping
-     * is left unchanged.
-     *
-     * @implSpec
-     * The default implementation is equivalent to performing the following
-     * steps for this {@code map}, then returning the current value or
-     * {@code null} if absent:
-     *
+     * 默认实现等效于对此 map执行以下步骤，然后返回当前值；如果现在不存在，则返回 null：
      * <pre> {@code
      * V oldValue = map.get(key);
      * V newValue = remappingFunction.apply(key, oldValue);
@@ -1063,73 +563,41 @@ public interface Map<K,V> {
      * }
      * }</pre>
      *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties. In particular, all implementations of
-     * subinterface {@link java.util.concurrent.ConcurrentMap} must document
-     * whether the function is applied once atomically only if the value is not
-     * present.
-     *
-     * @param key key with which the specified value is to be associated
-     * @param remappingFunction the function to compute a value
-     * @return the new value associated with the specified key, or null if none
-     * @throws NullPointerException if the specified key is null and
-     *         this map does not support null keys, or the
-     *         remappingFunction is null
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the class of the specified key or value
-     *         prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
+     * @param key 指定的 key键
+     * @param remappingFunction 补充 value值的方法
+     * @return 与指定键关联的新值；如果没有，则为null
+     * @throws NullPointerException 如果指定 key为 null并且这个map不允许key为null,或者 remappingFunction是null
+     * @throws UnsupportedOperationException 如果当前 map没有提供 put方法
+     * @throws ClassCastException 如果 key或value 的类型不符合此 Map
      * @since 1.8
      */
-    default V compute(K key,
-            BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    default V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         V oldValue = get(key);
-
         V newValue = remappingFunction.apply(key, oldValue);
         if (newValue == null) {
-            // delete mapping
             if (oldValue != null || containsKey(key)) {
-                // something to remove
                 remove(key);
                 return null;
             } else {
-                // nothing to do. Leave things as they were.
                 return null;
             }
         } else {
-            // add or replace old mapping
             put(key, newValue);
             return newValue;
         }
     }
 
     /**
-     * If the specified key is not already associated with a value or is
-     * associated with null, associates it with the given non-null value.
-     * Otherwise, replaces the associated value with the results of the given
-     * remapping function, or removes if the result is {@code null}. This
-     * method may be of use when combining multiple mapped values for a key.
-     * For example, to either create or append a {@code String msg} to a
-     * value mapping:
-     *
+     * 1. 获得指定key的value值
+     * 2. 如果旧键值为null，使用默认参数value为新键值；如果不为null，重新计算键值
+     * 3. 如果新键值为 null，移除该键值对，否则替换键值对；并返回新键值
      * <pre> {@code
      * map.merge(key, msg, String::concat)
      * }</pre>
      *
-     * <p>If the function returns {@code null} the mapping is removed.  If the
-     * function itself throws an (unchecked) exception, the exception is
-     * rethrown, and the current mapping is left unchanged.
-     *
-     * @implSpec
-     * The default implementation is equivalent to performing the following
-     * steps for this {@code map}, then returning the current value or
-     * {@code null} if absent:
-     *
+     * 默认实现等效于对此 map执行以下步骤，然后返回当前值；如果现在不存在，则返回 null：
      * <pre> {@code
      * V oldValue = map.get(key);
      * V newValue = (oldValue == null) ? value :
@@ -1140,34 +608,17 @@ public interface Map<K,V> {
      *     map.put(key, newValue);
      * }</pre>
      *
-     * <p>The default implementation makes no guarantees about synchronization
-     * or atomicity properties of this method. Any implementation providing
-     * atomicity guarantees must override this method and document its
-     * concurrency properties. In particular, all implementations of
-     * subinterface {@link java.util.concurrent.ConcurrentMap} must document
-     * whether the function is applied once atomically only if the value is not
-     * present.
-     *
-     * @param key key with which the resulting value is to be associated
-     * @param value the non-null value to be merged with the existing value
-     *        associated with the key or, if no existing value or a null value
-     *        is associated with the key, to be associated with the key
-     * @param remappingFunction the function to recompute a value if present
-     * @return the new value associated with the specified key, or null if no
-     *         value is associated with the key
-     * @throws UnsupportedOperationException if the {@code put} operation
-     *         is not supported by this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws ClassCastException if the class of the specified key or value
-     *         prevents it from being stored in this map
-     *         (<a href="{@docRoot}/java/util/Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified key is null and this map
-     *         does not support null keys or the value or remappingFunction is
-     *         null
+     * 默认实现不保证此方法的同步或原子性。提供原子性保证的任何实现都必须重写此方法并记录其并发属性。
+     * @param key 指定的 key键
+     * @param value 要与键相关联的现有值合并的非null值，或者如果没有现有值或null值与该键相关联，则要与该键相关联
+     * @param remappingFunction 重新计算value的方法
+     * @return 与指定键关联的新值；如果没有值与键关联，则为null
+     * @throws UnsupportedOperationException 如果当前 map没有提供 put方法
+     * @throws ClassCastException 如果 key或value 的类型不符合此 Map
+     * @throws NullPointerException 如果指定 key为 null并且这个map不允许key为null,或者 remappingFunction是null
      * @since 1.8
      */
-    default V merge(K key, V value,
-            BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+    default V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
         Objects.requireNonNull(value);
         V oldValue = get(key);
