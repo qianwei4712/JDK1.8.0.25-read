@@ -1,38 +1,3 @@
-/*
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
-/*
- *
- *
- *
- *
- *
- * Written by Doug Lea and Josh Bloch with assistance from members of JCP
- * JSR-166 Expert Group and released to the public domain, as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 package java.util;
 
 /**
@@ -74,246 +39,133 @@ package java.util;
  * of this interface are encouraged to override these methods to return
  * {@code NavigableSet}.
  *
- * <p>This interface is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @author Doug Lea
- * @author Josh Bloch
- * @param <E> the type of elements maintained by this set
+ * @param <E> 此集合所维护的元素类型
  * @since 1.6
  */
 public interface NavigableSet<E> extends SortedSet<E> {
     /**
-     * Returns the greatest element in this set strictly less than the
-     * given element, or {@code null} if there is no such element.
-     *
-     * @param e the value to match
-     * @return the greatest element less than {@code e},
-     *         or {@code null} if there is no such element
-     * @throws ClassCastException if the specified element cannot be
-     *         compared with the elements currently in the set
-     * @throws NullPointerException if the specified element is null
-     *         and this set does not permit null elements
+     * 返回此 set 中严格小于给定元素的最大元素；如果不存在这样的元素，则返回 null。
+     * @param e 需要匹配的值
+     * @return 返回此 set 中严格小于给定元素的最大元素；如果不存在这样的元素，则返回 null。
+     * @throws ClassCastException 如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException 如果指定的元素为null，并且此集合不允许使用null元素
      */
     E lower(E e);
 
     /**
-     * Returns the greatest element in this set less than or equal to
-     * the given element, or {@code null} if there is no such element.
-     *
-     * @param e the value to match
-     * @return the greatest element less than or equal to {@code e},
-     *         or {@code null} if there is no such element
-     * @throws ClassCastException if the specified element cannot be
-     *         compared with the elements currently in the set
-     * @throws NullPointerException if the specified element is null
-     *         and this set does not permit null elements
+     * 返回此 set 中小于等于给定元素的最大元素；如果不存在这样的元素，则返回 null。
+     * @param e 需要匹配的值
+     * @return 返回此 set 中小于等于给定元素的最大元素；如果不存在这样的元素，则返回 null。
+     * @throws ClassCastException 如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException 如果指定的元素为null，并且此集合不允许使用null元素
      */
     E floor(E e);
 
     /**
-     * Returns the least element in this set greater than or equal to
-     * the given element, or {@code null} if there is no such element.
-     *
-     * @param e the value to match
-     * @return the least element greater than or equal to {@code e},
-     *         or {@code null} if there is no such element
-     * @throws ClassCastException if the specified element cannot be
-     *         compared with the elements currently in the set
-     * @throws NullPointerException if the specified element is null
-     *         and this set does not permit null elements
+     * 返回此 set 中大于等于给定元素的最小元素；如果不存在这样的元素，则返回 null。
+     * @param e 需要匹配的值
+     * @return 返回此 set 中大于等于给定元素的最小元素；如果不存在这样的元素，则返回 null。
+     * @throws ClassCastException 如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException 如果指定的元素为null，并且此集合不允许使用null元素
      */
     E ceiling(E e);
 
     /**
-     * Returns the least element in this set strictly greater than the
-     * given element, or {@code null} if there is no such element.
-     *
-     * @param e the value to match
-     * @return the least element greater than {@code e},
-     *         or {@code null} if there is no such element
-     * @throws ClassCastException if the specified element cannot be
-     *         compared with the elements currently in the set
-     * @throws NullPointerException if the specified element is null
-     *         and this set does not permit null elements
+     * 返回此 set 中严格大于给定元素的最小元素；如果不存在这样的元素，则返回 null。
+     * @param e 需要匹配的值
+     * @return 返回此 set 中严格大于给定元素的最小元素；如果不存在这样的元素，则返回 null。
+     * @throws ClassCastException 如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException 如果指定的元素为null，并且此集合不允许使用null元素
      */
     E higher(E e);
 
     /**
-     * Retrieves and removes the first (lowest) element,
-     * or returns {@code null} if this set is empty.
-     *
-     * @return the first element, or {@code null} if this set is empty
+     * @return 获取并移除第一个（最低）元素；如果此 set 为空，则返回 null。
      */
     E pollFirst();
 
     /**
-     * Retrieves and removes the last (highest) element,
-     * or returns {@code null} if this set is empty.
-     *
-     * @return the last element, or {@code null} if this set is empty
+     * @return 获取并移除最后一个（最高）元素；如果此 set 为空，则返回 null。
      */
     E pollLast();
 
     /**
-     * Returns an iterator over the elements in this set, in ascending order.
-     *
-     * @return an iterator over the elements in this set, in ascending order
+     * @return 以升序返回在此 set 的元素上进行迭代的迭代器。
      */
     Iterator<E> iterator();
 
     /**
-     * Returns a reverse order view of the elements contained in this set.
-     * The descending set is backed by this set, so changes to the set are
-     * reflected in the descending set, and vice-versa.  If either set is
-     * modified while an iteration over either set is in progress (except
-     * through the iterator's own {@code remove} operation), the results of
-     * the iteration are undefined.
-     *
-     * <p>The returned set has an ordering equivalent to
-     * <tt>{@link Collections#reverseOrder(Comparator) Collections.reverseOrder}(comparator())</tt>.
-     * The expression {@code s.descendingSet().descendingSet()} returns a
-     * view of {@code s} essentially equivalent to {@code s}.
-     *
-     * @return a reverse order view of this set
+     * @return 返回此 set 中所包含元素的逆序视图。
      */
     NavigableSet<E> descendingSet();
 
     /**
-     * Returns an iterator over the elements in this set, in descending order.
-     * Equivalent in effect to {@code descendingSet().iterator()}.
-     *
-     * @return an iterator over the elements in this set, in descending order
+     * @return 以降序返回在此 set 的元素上进行迭代的迭代器。
      */
     Iterator<E> descendingIterator();
 
     /**
-     * Returns a view of the portion of this set whose elements range from
-     * {@code fromElement} to {@code toElement}.  If {@code fromElement} and
-     * {@code toElement} are equal, the returned set is empty unless {@code
-     * fromInclusive} and {@code toInclusive} are both true.  The returned set
-     * is backed by this set, so changes in the returned set are reflected in
-     * this set, and vice-versa.  The returned set supports all optional set
-     * operations that this set supports.
-     *
-     * <p>The returned set will throw an {@code IllegalArgumentException}
-     * on an attempt to insert an element outside its range.
-     *
-     * @param fromElement low endpoint of the returned set
-     * @param fromInclusive {@code true} if the low endpoint
-     *        is to be included in the returned view
-     * @param toElement high endpoint of the returned set
-     * @param toInclusive {@code true} if the high endpoint
-     *        is to be included in the returned view
-     * @return a view of the portion of this set whose elements range from
-     *         {@code fromElement}, inclusive, to {@code toElement}, exclusive
-     * @throws ClassCastException if {@code fromElement} and
-     *         {@code toElement} cannot be compared to one another using this
-     *         set's comparator (or, if the set has no comparator, using
-     *         natural ordering).  Implementations may, but are not required
-     *         to, throw this exception if {@code fromElement} or
-     *         {@code toElement} cannot be compared to elements currently in
-     *         the set.
-     * @throws NullPointerException if {@code fromElement} or
-     *         {@code toElement} is null and this set does
-     *         not permit null elements
-     * @throws IllegalArgumentException if {@code fromElement} is
-     *         greater than {@code toElement}; or if this set itself
-     *         has a restricted range, and {@code fromElement} or
-     *         {@code toElement} lies outside the bounds of the range.
+     * 返回此 set 的部分视图，其元素范围从 fromElement 到 toElement。
+     * @param fromElement 起始元素节点
+     * @param fromInclusive 判断是否包含起始边界
+     * @param toElement 结束元素节点
+     * @param toInclusive 判断是否包含结束边界
+     * @return 返回此 set 的部分视图，其元素范围从 fromElement 到 toElement。
+     * @throws ClassCastException 如果使用该集合的比较器无法将<tt> fromElement </tt>和 <tt> toElement </tt>相互比较（或者，如果该集合没有比较器，则使用自然排序）。
+     *       如果无法将<tt> fromElement </tt>或 <tt> toElement </tt>与当前集中的元素进行比较，则实现可能会（但并非必须）引发此异常。
+     * @throws NullPointerException 如果起始节点或者结束节点为空，并且本 set不允许null节点
+     * @throws IllegalArgumentException 如果<tt> fromElement </tt>是大于<tt> toElement </tt>；
+     *       或如果此集合本身的范围受限制，并且<tt> fromElement </tt>或 <tt> toElement </tt>位于范围的边界之外
      */
     NavigableSet<E> subSet(E fromElement, boolean fromInclusive,
                            E toElement,   boolean toInclusive);
 
     /**
-     * Returns a view of the portion of this set whose elements are less than
-     * (or equal to, if {@code inclusive} is true) {@code toElement}.  The
-     * returned set is backed by this set, so changes in the returned set are
-     * reflected in this set, and vice-versa.  The returned set supports all
-     * optional set operations that this set supports.
-     *
-     * <p>The returned set will throw an {@code IllegalArgumentException}
-     * on an attempt to insert an element outside its range.
-     *
-     * @param toElement high endpoint of the returned set
-     * @param inclusive {@code true} if the high endpoint
-     *        is to be included in the returned view
-     * @return a view of the portion of this set whose elements are less than
-     *         (or equal to, if {@code inclusive} is true) {@code toElement}
-     * @throws ClassCastException if {@code toElement} is not compatible
-     *         with this set's comparator (or, if the set has no comparator,
-     *         if {@code toElement} does not implement {@link Comparable}).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code toElement} cannot be compared to elements
-     *         currently in the set.
-     * @throws NullPointerException if {@code toElement} is null and
-     *         this set does not permit null elements
-     * @throws IllegalArgumentException if this set itself has a
-     *         restricted range, and {@code toElement} lies outside the
-     *         bounds of the range
+     * 返回此 set 的部分视图，其元素小于（或等于，如果 inclusive 为 true）toElement。
+     * @param toElement 结束元素节点
+     * @param inclusive 判断是否包含结束边界
+     * @return 返回此 set 的部分视图，其元素小于（或等于，如果 inclusive 为 true）toElement。
+     * @throws ClassCastException 如果<tt> toElement </tt>与该集合的比较器不兼容（或者，如果集合中没有比较器，则如果<tt> toElement </ tt>不实现{@link Comparable}）。
+     *         如果不能将<tt> toElement </tt>与当前集中的元素进行比较，则实现可以（但并非必须）抛出此异常。
+     * @throws NullPointerException 如果<tt> toElement </tt>为null，并且此集合不允许null元素
+     * @throws IllegalArgumentException 如果此集合本身具有限制范围，并且<tt> toElement </tt>位于该范围的范围之外
      */
     NavigableSet<E> headSet(E toElement, boolean inclusive);
 
     /**
-     * Returns a view of the portion of this set whose elements are greater
-     * than (or equal to, if {@code inclusive} is true) {@code fromElement}.
-     * The returned set is backed by this set, so changes in the returned set
-     * are reflected in this set, and vice-versa.  The returned set supports
-     * all optional set operations that this set supports.
-     *
-     * <p>The returned set will throw an {@code IllegalArgumentException}
-     * on an attempt to insert an element outside its range.
-     *
-     * @param fromElement low endpoint of the returned set
-     * @param inclusive {@code true} if the low endpoint
-     *        is to be included in the returned view
-     * @return a view of the portion of this set whose elements are greater
-     *         than or equal to {@code fromElement}
-     * @throws ClassCastException if {@code fromElement} is not compatible
-     *         with this set's comparator (or, if the set has no comparator,
-     *         if {@code fromElement} does not implement {@link Comparable}).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code fromElement} cannot be compared to elements
-     *         currently in the set.
-     * @throws NullPointerException if {@code fromElement} is null
-     *         and this set does not permit null elements
-     * @throws IllegalArgumentException if this set itself has a
-     *         restricted range, and {@code fromElement} lies outside the
-     *         bounds of the range
+     * 返回此 set 的部分视图，其元素大于（或等于，如果 inclusive 为 true）fromElement。
+     * @param fromElement 起始元素节点
+     * @param inclusive 判断是否包含起始边界
+     * @return 返回此 set 的部分视图，其元素大于（或等于，如果 inclusive 为 true）fromElement。
+     * @throws ClassCastException 如果<tt> fromElement </tt>与该集合的比较器不兼容（或者，如果集合中没有比较器，则如果<tt> fromElement </tt>不实现{@link Comparable}）。
+     *         如果<tt> fromElement </tt>无法与集合中当前的元素进行比较，则实现可能会（但并非必须）抛出此异常。
+     * @throws NullPointerException 如果<tt> fromElement </tt>为null，并且此集合不允许 null元素
+     * @throws IllegalArgumentException 如果此集合本身具有限制范围，并且<tt> fromElement </tt>位于该范围的范围之外
      */
     NavigableSet<E> tailSet(E fromElement, boolean inclusive);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>Equivalent to {@code subSet(fromElement, true, toElement, false)}.
-     *
-     * @throws ClassCastException       {@inheritDoc}
-     * @throws NullPointerException     {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * 返回此 set 的部分视图，其元素从 fromElement（包括）到 toElement（不包括）
+     * @throws ClassCastException       如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException    如果起始节点或者结束节点为空，并且本 set不允许null节点
+     * @throws IllegalArgumentException 如果<tt> fromElement </tt>是大于<tt> toElement </tt>；
+     *                                  或如果此集合本身的范围受限制，并且<tt> fromElement </tt>或 <tt> toElement </tt>位于范围的边界之外
      */
     SortedSet<E> subSet(E fromElement, E toElement);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>Equivalent to {@code headSet(toElement, false)}.
-     *
-     * @throws ClassCastException       {@inheritDoc}
-     * @throws NullPointerException     {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * 返回此 set 的部分视图，其元素严格小于 toElement。
+     * @throws ClassCastException       如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException     如果<tt> toElement </tt>为null，并且此集合不允许 null元素
+     * @throws IllegalArgumentException 如果此集合本身具有限制范围，并且<tt> toElement </tt>位于该范围的范围之外
      */
     SortedSet<E> headSet(E toElement);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>Equivalent to {@code tailSet(fromElement, true)}.
-     *
-     * @throws ClassCastException       {@inheritDoc}
-     * @throws NullPointerException     {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * 返回此 set 的部分视图，其元素大于等于 fromElement。
+     * @throws ClassCastException          如果指定的元素不能与集合中当前的元素进行比较
+     * @throws NullPointerException        如果<tt> fromElement </tt>为null，并且此集合不允许 null元素
+     * @throws IllegalArgumentException    如果此集合本身具有限制范围，并且<tt> fromElement </tt>位于该范围的范围之外
      */
     SortedSet<E> tailSet(E fromElement);
 }
