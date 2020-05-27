@@ -1,284 +1,85 @@
-/*
- * Copyright (c) 1998, 2011, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.util;
 
 /**
- * A {@link Map} that further provides a <em>total ordering</em> on its keys.
- * The map is ordered according to the {@linkplain Comparable natural
- * ordering} of its keys, or by a {@link Comparator} typically
- * provided at sorted map creation time.  This order is reflected when
- * iterating over the sorted map's collection views (returned by the
- * {@code entrySet}, {@code keySet} and {@code values} methods).
- * Several additional operations are provided to take advantage of the
- * ordering.  (This interface is the map analogue of {@link SortedSet}.)
+ * Map 进一步在其键上提供了排序。
+ * map是根据其键的可比自然排序（key实现Comparable接口）进行的，或者通常是通过在排序的映射创建时提供的{@link Comparator} 比较器进行排序的。
+ * 在迭代排序后的地图的集合视图时（由 entrySet， keySet 和  values方法返回）反映了此顺序。
+ * 提供了一些附加的操作以利用顺序。 （和{@link SortedSet}类似。）<p>
  *
- * <p>All keys inserted into a sorted map must implement the {@code Comparable}
- * interface (or be accepted by the specified comparator).  Furthermore, all
- * such keys must be <em>mutually comparable</em>: {@code k1.compareTo(k2)} (or
- * {@code comparator.compare(k1, k2)}) must not throw a
- * {@code ClassCastException} for any keys {@code k1} and {@code k2} in
- * the sorted map.  Attempts to violate this restriction will cause the
- * offending method or constructor invocation to throw a
- * {@code ClassCastException}.
+ * 插入键值对的 key都必须实现 {@code Comparable} 接口，或者此 SortedMap必须指定比较器。
+ * 此外，所有这样的键必须是<em>相互可比较的</em>：{@code k1.compareTo（k2）}（或{@code comparator.compare（k1，k2）}）。
+ * 否则抛出{@code ClassCastException}.<p>
  *
- * <p>Note that the ordering maintained by a sorted map (whether or not an
- * explicit comparator is provided) must be <em>consistent with equals</em> if
- * the sorted map is to correctly implement the {@code Map} interface.  (See
- * the {@code Comparable} interface or {@code Comparator} interface for a
- * precise definition of <em>consistent with equals</em>.)  This is so because
- * the {@code Map} interface is defined in terms of the {@code equals}
- * operation, but a sorted map performs all key comparisons using its
- * {@code compareTo} (or {@code compare}) method, so two keys that are
- * deemed equal by this method are, from the standpoint of the sorted map,
- * equal.  The behavior of a tree map <em>is</em> well-defined even if its
- * ordering is inconsistent with equals; it just fails to obey the general
- * contract of the {@code Map} interface.
+ * 请注意，如果排序图要正确实现{@code Map}接口，则排序图（无论是否提供显式比较器）所维护的顺序必须<em>与equals </em>一致。
+ * （请参见 {@code Comparable}接口或{@code Comparator}接口，以获取<em>与equals </em>一致的精确定义。）
+ * 之所以这样，是因为{@code Map}接口是在{@code equals} 操作的术语，但是排序后的映射使用其 {@code compareTo}（或{@code compare}）方法执行所有键比较，
+ * 因此，被该方法视为相等的两个键是：从排序图的角度来看相等。TreeMap 的行为是明确定义的，即使其顺序与equals不一致；它只是不能遵守{@code Map}接口的一般约束。
  *
- * <p>All general-purpose sorted map implementation classes should provide four
- * "standard" constructors. It is not possible to enforce this recommendation
- * though as required constructors cannot be specified by interfaces. The
- * expected "standard" constructors for all sorted map implementations are:
- * <ol>
- *   <li>A void (no arguments) constructor, which creates an empty sorted map
- *   sorted according to the natural ordering of its keys.</li>
- *   <li>A constructor with a single argument of type {@code Comparator}, which
- *   creates an empty sorted map sorted according to the specified comparator.</li>
- *   <li>A constructor with a single argument of type {@code Map}, which creates
- *   a new map with the same key-value mappings as its argument, sorted
- *   according to the keys' natural ordering.</li>
- *   <li>A constructor with a single argument of type {@code SortedMap}, which
- *   creates a new sorted map with the same key-value mappings and the same
- *   ordering as the input sorted map.</li>
- * </ol>
- *
- * <p><strong>Note</strong>: several methods return submaps with restricted key
- * ranges. Such ranges are <em>half-open</em>, that is, they include their low
- * endpoint but not their high endpoint (where applicable).  If you need a
- * <em>closed range</em> (which includes both endpoints), and the key type
- * allows for calculation of the successor of a given key, merely request
- * the subrange from {@code lowEndpoint} to
- * {@code successor(highEndpoint)}.  For example, suppose that {@code m}
- * is a map whose keys are strings.  The following idiom obtains a view
- * containing all of the key-value mappings in {@code m} whose keys are
- * between {@code low} and {@code high}, inclusive:<pre>
- *   SortedMap&lt;String, V&gt; sub = m.subMap(low, high+"\0");</pre>
- *
- * A similar technique can be used to generate an <em>open range</em>
- * (which contains neither endpoint).  The following idiom obtains a
- * view containing all of the key-value mappings in {@code m} whose keys
- * are between {@code low} and {@code high}, exclusive:<pre>
- *   SortedMap&lt;String, V&gt; sub = m.subMap(low+"\0", high);</pre>
- *
- * <p>This interface is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
- *
- * @author  Josh Bloch
- * @see Map
- * @see TreeMap
- * @see SortedSet
- * @see Comparator
- * @see Comparable
- * @see Collection
- * @see ClassCastException
+ * @param <K> 此 map维护的 key的类型
+ * @param <V> 映射值 value的类型
  * @since 1.2
  */
-
 public interface SortedMap<K,V> extends Map<K,V> {
     /**
-     * Returns the comparator used to order the keys in this map, or
-     * {@code null} if this map uses the {@linkplain Comparable
-     * natural ordering} of its keys.
-     *
-     * @return the comparator used to order the keys in this map,
-     *         or {@code null} if this map uses the natural ordering
-     *         of its keys
+     * @return 返回用于在此 map中对键进行排序的比较器；如果此映射使用其键的{@linkplain Comparable }自然排序，则返回 null。
      */
     Comparator<? super K> comparator();
 
     /**
-     * Returns a view of the portion of this map whose keys range from
-     * {@code fromKey}, inclusive, to {@code toKey}, exclusive.  (If
-     * {@code fromKey} and {@code toKey} are equal, the returned map
-     * is empty.)  The returned map is backed by this map, so changes
-     * in the returned map are reflected in this map, and vice-versa.
-     * The returned map supports all optional map operations that this
-     * map supports.
-     *
-     * <p>The returned map will throw an {@code IllegalArgumentException}
-     * on an attempt to insert a key outside its range.
-     *
-     * @param fromKey low endpoint (inclusive) of the keys in the returned map
-     * @param toKey high endpoint (exclusive) of the keys in the returned map
-     * @return a view of the portion of this map whose keys range from
-     *         {@code fromKey}, inclusive, to {@code toKey}, exclusive
-     * @throws ClassCastException if {@code fromKey} and {@code toKey}
-     *         cannot be compared to one another using this map's comparator
-     *         (or, if the map has no comparator, using natural ordering).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code fromKey} or {@code toKey}
-     *         cannot be compared to keys currently in the map.
-     * @throws NullPointerException if {@code fromKey} or {@code toKey}
-     *         is null and this map does not permit null keys
-     * @throws IllegalArgumentException if {@code fromKey} is greater than
-     *         {@code toKey}; or if this map itself has a restricted
-     *         range, and {@code fromKey} or {@code toKey} lies
-     *         outside the bounds of the range
+     * @param fromKey 返回 map中键的低端点（包括边界）
+     * @param toKey 返回 map中键的高端点（不包括）
+     * @return 此地图部分的视图，其键范围为 fromKey（包括边界） 到 toKey（不包括）
+     * @throws ClassCastException 如果 fromKey 和 toKey 无法使用此映射的比较器相互比较（或者，如果映射没有比较器，则使用自然顺序）。
+     *         如果 fromKey 或 toKey 无法与地图中当前的键进行比较，则实现可能会（但并非必须）抛出此异常。
+     * @throws NullPointerException 如果 fromKey 或 toKey 为空，并且此映射不允许空键
+     * @throws IllegalArgumentException 如果 fromKey 大于 toKey；或此地图本身的范围受到限制并且 fromKey 或 toKey 位于范围之外
      */
     SortedMap<K,V> subMap(K fromKey, K toKey);
 
     /**
-     * Returns a view of the portion of this map whose keys are
-     * strictly less than {@code toKey}.  The returned map is backed
-     * by this map, so changes in the returned map are reflected in
-     * this map, and vice-versa.  The returned map supports all
-     * optional map operations that this map supports.
-     *
-     * <p>The returned map will throw an {@code IllegalArgumentException}
-     * on an attempt to insert a key outside its range.
-     *
-     * @param toKey high endpoint (exclusive) of the keys in the returned map
-     * @return a view of the portion of this map whose keys are strictly
-     *         less than {@code toKey}
-     * @throws ClassCastException if {@code toKey} is not compatible
-     *         with this map's comparator (or, if the map has no comparator,
-     *         if {@code toKey} does not implement {@link Comparable}).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code toKey} cannot be compared to keys
-     *         currently in the map.
-     * @throws NullPointerException if {@code toKey} is null and
-     *         this map does not permit null keys
-     * @throws IllegalArgumentException if this map itself has a
-     *         restricted range, and {@code toKey} lies outside the
-     *         bounds of the range
+     * @param toKey 返回 map中键的高端点（不包括）
+     * @return 此地图部分的视图，其键范围为起始节点到 toKey（不包括）
+     * @throws ClassCastException 如果 toKey 与该地图的比较器不兼容（或者，如果地图没有比较器，则如果 toKey 不实现{@link Comparable}）。
+     *        如果 toKey 无法与地图中当前的键进行比较，则实现可能会（但并非必须）抛出此异常。
+     * @throws NullPointerException 如果 toKey 为空，并且此映射不允许空键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     SortedMap<K,V> headMap(K toKey);
 
     /**
-     * Returns a view of the portion of this map whose keys are
-     * greater than or equal to {@code fromKey}.  The returned map is
-     * backed by this map, so changes in the returned map are
-     * reflected in this map, and vice-versa.  The returned map
-     * supports all optional map operations that this map supports.
-     *
-     * <p>The returned map will throw an {@code IllegalArgumentException}
-     * on an attempt to insert a key outside its range.
-     *
-     * @param fromKey low endpoint (inclusive) of the keys in the returned map
-     * @return a view of the portion of this map whose keys are greater
-     *         than or equal to {@code fromKey}
-     * @throws ClassCastException if {@code fromKey} is not compatible
-     *         with this map's comparator (or, if the map has no comparator,
-     *         if {@code fromKey} does not implement {@link Comparable}).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code fromKey} cannot be compared to keys
-     *         currently in the map.
-     * @throws NullPointerException if {@code fromKey} is null and
-     *         this map does not permit null keys
-     * @throws IllegalArgumentException if this map itself has a
-     *         restricted range, and {@code fromKey} lies outside the
-     *         bounds of the range
+     * @param fromKey 返回 map中键的低端点（包括边界）
+     * @return 此地图部分的视图，其键范围为 fromKey（包括边界） 到结束
+     * @throws ClassCastException 如果 fromKey 与该地图的比较器不兼容（或者，如果地图没有比较器，则如果 fromKey 不实现{@link Comparable}）。
+     *        如果 fromKey 无法与地图中当前的键进行比较，则实现可能会（但并非必须）抛出此异常。
+     * @throws NullPointerException 如果 fromKey 为空，并且此映射不允许空键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     SortedMap<K,V> tailMap(K fromKey);
 
     /**
-     * Returns the first (lowest) key currently in this map.
-     *
-     * @return the first (lowest) key currently in this map
-     * @throws NoSuchElementException if this map is empty
+     * @return 当前在此地图中的第一个（最小）键
+     * @throws NoSuchElementException 如果此地图为空
      */
     K firstKey();
 
     /**
-     * Returns the last (highest) key currently in this map.
-     *
-     * @return the last (highest) key currently in this map
-     * @throws NoSuchElementException if this map is empty
+     * @return 当前在此地图中的最后一个（最大）键
+     * @throws NoSuchElementException 如果此地图为空
      */
     K lastKey();
 
     /**
-     * Returns a {@link Set} view of the keys contained in this map.
-     * The set's iterator returns the keys in ascending order.
-     * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  If the map is modified
-     * while an iteration over the set is in progress (except through
-     * the iterator's own {@code remove} operation), the results of
-     * the iteration are undefined.  The set supports element removal,
-     * which removes the corresponding mapping from the map, via the
-     * {@code Iterator.remove}, {@code Set.remove},
-     * {@code removeAll}, {@code retainAll}, and {@code clear}
-     * operations.  It does not support the {@code add} or {@code addAll}
-     * operations.
-     *
-     * @return a set view of the keys contained in this map, sorted in
-     *         ascending order
+     * @return 此 map中包含的 key的set集合，以 key比较后升序排列
      */
     Set<K> keySet();
 
     /**
-     * Returns a {@link Collection} view of the values contained in this map.
-     * The collection's iterator returns the values in ascending order
-     * of the corresponding keys.
-     * The collection is backed by the map, so changes to the map are
-     * reflected in the collection, and vice-versa.  If the map is
-     * modified while an iteration over the collection is in progress
-     * (except through the iterator's own {@code remove} operation),
-     * the results of the iteration are undefined.  The collection
-     * supports element removal, which removes the corresponding
-     * mapping from the map, via the {@code Iterator.remove},
-     * {@code Collection.remove}, {@code removeAll},
-     * {@code retainAll} and {@code clear} operations.  It does not
-     * support the {@code add} or {@code addAll} operations.
-     *
-     * @return a collection view of the values contained in this map,
-     *         sorted in ascending key order
+     * @return 此 map中包含的 value值的集合，按 key比较后升序排列
      */
     Collection<V> values();
 
     /**
-     * Returns a {@link Set} view of the mappings contained in this map.
-     * The set's iterator returns the entries in ascending key order.
-     * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  If the map is modified
-     * while an iteration over the set is in progress (except through
-     * the iterator's own {@code remove} operation, or through the
-     * {@code setValue} operation on a map entry returned by the
-     * iterator) the results of the iteration are undefined.  The set
-     * supports element removal, which removes the corresponding
-     * mapping from the map, via the {@code Iterator.remove},
-     * {@code Set.remove}, {@code removeAll}, {@code retainAll} and
-     * {@code clear} operations.  It does not support the
-     * {@code add} or {@code addAll} operations.
-     *
-     * @return a set view of the mappings contained in this map,
-     *         sorted in ascending key order
+     * @return 此 map中包含的键值对的集合视图，按key比较后升序排列
      */
     Set<Map.Entry<K, V>> entrySet();
 }
