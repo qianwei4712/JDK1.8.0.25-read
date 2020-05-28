@@ -1,424 +1,166 @@
-/*
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
-/*
- *
- *
- *
- *
- *
- * Written by Doug Lea and Josh Bloch with assistance from members of JCP
- * JSR-166 Expert Group and released to the public domain, as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 package java.util;
 
 /**
- * A {@link SortedMap} extended with navigation methods returning the
- * closest matches for given search targets. Methods
- * {@code lowerEntry}, {@code floorEntry}, {@code ceilingEntry},
- * and {@code higherEntry} return {@code Map.Entry} objects
- * associated with keys respectively less than, less than or equal,
- * greater than or equal, and greater than a given key, returning
- * {@code null} if there is no such key.  Similarly, methods
- * {@code lowerKey}, {@code floorKey}, {@code ceilingKey}, and
- * {@code higherKey} return only the associated keys. All of these
- * methods are designed for locating, not traversing entries.
- *
- * <p>A {@code NavigableMap} may be accessed and traversed in either
- * ascending or descending key order.  The {@code descendingMap}
- * method returns a view of the map with the senses of all relational
- * and directional methods inverted. The performance of ascending
- * operations and views is likely to be faster than that of descending
- * ones.  Methods {@code subMap}, {@code headMap},
- * and {@code tailMap} differ from the like-named {@code
- * SortedMap} methods in accepting additional arguments describing
- * whether lower and upper bounds are inclusive versus exclusive.
- * Submaps of any {@code NavigableMap} must implement the {@code
- * NavigableMap} interface.
- *
- * <p>This interface additionally defines methods {@code firstEntry},
- * {@code pollFirstEntry}, {@code lastEntry}, and
- * {@code pollLastEntry} that return and/or remove the least and
- * greatest mappings, if any exist, else returning {@code null}.
- *
- * <p>Implementations of entry-returning methods are expected to
- * return {@code Map.Entry} pairs representing snapshots of mappings
- * at the time they were produced, and thus generally do <em>not</em>
- * support the optional {@code Entry.setValue} method. Note however
- * that it is possible to change mappings in the associated map using
- * method {@code put}.
- *
- * <p>Methods
- * {@link #subMap(Object, Object) subMap(K, K)},
- * {@link #headMap(Object) headMap(K)}, and
- * {@link #tailMap(Object) tailMap(K)}
- * are specified to return {@code SortedMap} to allow existing
- * implementations of {@code SortedMap} to be compatibly retrofitted to
- * implement {@code NavigableMap}, but extensions and implementations
- * of this interface are encouraged to override these methods to return
- * {@code NavigableMap}.  Similarly,
- * {@link #keySet()} can be overriden to return {@code NavigableSet}.
- *
- * <p>This interface is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @author Doug Lea
- * @author Josh Bloch
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
+ * @param <K> 此地图维护的key键的类型
+ * @param <V> 映射值value的类型
  * @since 1.6
  */
 public interface NavigableMap<K,V> extends SortedMap<K,V> {
     /**
-     * Returns a key-value mapping associated with the greatest key
-     * strictly less than the given key, or {@code null} if there is
-     * no such key.
-     *
      * @param key the key
-     * @return an entry with the greatest key less than {@code key},
-     *         or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回严格小于给定键的最大键值对，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     Map.Entry<K,V> lowerEntry(K key);
 
     /**
-     * Returns the greatest key strictly less than the given key, or
-     * {@code null} if there is no such key.
-     *
      * @param key the key
-     * @return the greatest key less than {@code key},
-     *         or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回严格小于给定键的最大键值对，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     K lowerKey(K key);
 
     /**
-     * Returns a key-value mapping associated with the greatest key
-     * less than or equal to the given key, or {@code null} if there
-     * is no such key.
-     *
      * @param key the key
-     * @return an entry with the greatest key less than or equal to
-     *         {@code key}, or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回小于或等于给定键的最大键值对，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     Map.Entry<K,V> floorEntry(K key);
 
     /**
-     * Returns the greatest key less than or equal to the given key,
-     * or {@code null} if there is no such key.
-     *
      * @param key the key
-     * @return the greatest key less than or equal to {@code key},
-     *         or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回小于或等于给定键的最大键，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     K floorKey(K key);
 
     /**
-     * Returns a key-value mapping associated with the least key
-     * greater than or equal to the given key, or {@code null} if
-     * there is no such key.
-     *
      * @param key the key
-     * @return an entry with the least key greater than or equal to
-     *         {@code key}, or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回大于或等于给定键的最小键值对，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     Map.Entry<K,V> ceilingEntry(K key);
 
     /**
-     * Returns the least key greater than or equal to the given key,
-     * or {@code null} if there is no such key.
-     *
      * @param key the key
-     * @return the least key greater than or equal to {@code key},
-     *         or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回大于或等于给定键的最小键，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     K ceilingKey(K key);
 
     /**
-     * Returns a key-value mapping associated with the least key
-     * strictly greater than the given key, or {@code null} if there
-     * is no such key.
-     *
      * @param key the key
-     * @return an entry with the least key greater than {@code key},
-     *         or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回严格大于给定键的最小键值对，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     Map.Entry<K,V> higherEntry(K key);
 
     /**
-     * Returns the least key strictly greater than the given key, or
-     * {@code null} if there is no such key.
-     *
      * @param key the key
-     * @return the least key greater than {@code key},
-     *         or {@code null} if there is no such key
-     * @throws ClassCastException if the specified key cannot be compared
-     *         with the keys currently in the map
-     * @throws NullPointerException if the specified key is null
-     *         and this map does not permit null keys
+     * @return 返回严格大于给定键的最小键，或者如果没有这样的键。
+     * @throws ClassCastException 如果指定的键无法与当前map中的键进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
      */
     K higherKey(K key);
 
     /**
-     * Returns a key-value mapping associated with the least
-     * key in this map, or {@code null} if the map is empty.
-     *
-     * @return an entry with the least key,
-     *         or {@code null} if this map is empty
+     * @return 返回第一个（最小）键值对，如果不存在返回null
      */
     Map.Entry<K,V> firstEntry();
 
     /**
-     * Returns a key-value mapping associated with the greatest
-     * key in this map, or {@code null} if the map is empty.
-     *
-     * @return an entry with the greatest key,
-     *         or {@code null} if this map is empty
+     * @return 返回最后一个（最大）键值对，如果不存在返回null
      */
     Map.Entry<K,V> lastEntry();
 
     /**
-     * Removes and returns a key-value mapping associated with
-     * the least key in this map, or {@code null} if the map is empty.
-     *
-     * @return the removed first entry of this map,
-     *         or {@code null} if this map is empty
+     * @return 返回第一个（最小）键值对并移除，如果不存在返回null
      */
     Map.Entry<K,V> pollFirstEntry();
 
     /**
-     * Removes and returns a key-value mapping associated with
-     * the greatest key in this map, or {@code null} if the map is empty.
-     *
-     * @return the removed last entry of this map,
-     *         or {@code null} if this map is empty
+     * @return 返回最后一个（最大）键值对并移除，如果不存在返回null
      */
     Map.Entry<K,V> pollLastEntry();
 
     /**
-     * Returns a reverse order view of the mappings contained in this map.
-     * The descending map is backed by this map, so changes to the map are
-     * reflected in the descending map, and vice-versa.  If either map is
-     * modified while an iteration over a collection view of either map
-     * is in progress (except through the iterator's own {@code remove}
-     * operation), the results of the iteration are undefined.
-     *
-     * <p>The returned map has an ordering equivalent to
-     * <tt>{@link Collections#reverseOrder(Comparator) Collections.reverseOrder}(comparator())</tt>.
-     * The expression {@code m.descendingMap().descendingMap()} returns a
-     * view of {@code m} essentially equivalent to {@code m}.
-     *
-     * @return a reverse order view of this map
+     * @return 返回此 map中包含的映射的逆序视图。
      */
     NavigableMap<K,V> descendingMap();
 
     /**
-     * Returns a {@link NavigableSet} view of the keys contained in this map.
-     * The set's iterator returns the keys in ascending order.
-     * The set is backed by the map, so changes to the map are reflected in
-     * the set, and vice-versa.  If the map is modified while an iteration
-     * over the set is in progress (except through the iterator's own {@code
-     * remove} operation), the results of the iteration are undefined.  The
-     * set supports element removal, which removes the corresponding mapping
-     * from the map, via the {@code Iterator.remove}, {@code Set.remove},
-     * {@code removeAll}, {@code retainAll}, and {@code clear} operations.
-     * It does not support the {@code add} or {@code addAll} operations.
-     *
-     * @return a navigable set view of the keys in this map
+     * @return 返回一个Navigable的key的集合
      */
     NavigableSet<K> navigableKeySet();
 
     /**
-     * Returns a reverse order {@link NavigableSet} view of the keys contained in this map.
-     * The set's iterator returns the keys in descending order.
-     * The set is backed by the map, so changes to the map are reflected in
-     * the set, and vice-versa.  If the map is modified while an iteration
-     * over the set is in progress (except through the iterator's own {@code
-     * remove} operation), the results of the iteration are undefined.  The
-     * set supports element removal, which removes the corresponding mapping
-     * from the map, via the {@code Iterator.remove}, {@code Set.remove},
-     * {@code removeAll}, {@code retainAll}, and {@code clear} operations.
-     * It does not support the {@code add} or {@code addAll} operations.
-     *
-     * @return a reverse order navigable set view of the keys in this map
+     * @return 返回一个Navigable的key的倒序集合
      */
     NavigableSet<K> descendingKeySet();
 
     /**
-     * Returns a view of the portion of this map whose keys range from
-     * {@code fromKey} to {@code toKey}.  If {@code fromKey} and
-     * {@code toKey} are equal, the returned map is empty unless
-     * {@code fromInclusive} and {@code toInclusive} are both true.  The
-     * returned map is backed by this map, so changes in the returned map are
-     * reflected in this map, and vice-versa.  The returned map supports all
-     * optional map operations that this map supports.
-     *
-     * <p>The returned map will throw an {@code IllegalArgumentException}
-     * on an attempt to insert a key outside of its range, or to construct a
-     * submap either of whose endpoints lie outside its range.
-     *
-     * @param fromKey low endpoint of the keys in the returned map
-     * @param fromInclusive {@code true} if the low endpoint
-     *        is to be included in the returned view
-     * @param toKey high endpoint of the keys in the returned map
-     * @param toInclusive {@code true} if the high endpoint
-     *        is to be included in the returned view
-     * @return a view of the portion of this map whose keys range from
-     *         {@code fromKey} to {@code toKey}
-     * @throws ClassCastException if {@code fromKey} and {@code toKey}
-     *         cannot be compared to one another using this map's comparator
-     *         (or, if the map has no comparator, using natural ordering).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code fromKey} or {@code toKey}
-     *         cannot be compared to keys currently in the map.
-     * @throws NullPointerException if {@code fromKey} or {@code toKey}
-     *         is null and this map does not permit null keys
-     * @throws IllegalArgumentException if {@code fromKey} is greater than
-     *         {@code toKey}; or if this map itself has a restricted
-     *         range, and {@code fromKey} or {@code toKey} lies
-     *         outside the bounds of the range
+     * @param fromKey 返回 map中键的起始点
+     * @param fromInclusive 判断是否包含起始边界
+     * @param toKey 返回 map中键的结束点
+     * @param toInclusive 判断是否包含结束边界
+     * @return 返回此 map 的部分视图，其元素范围从 fromElement 到 toElement。
+     * @throws ClassCastException 如果使用该集合的比较器无法将<tt> fromKey </tt>和 <tt> toKey </tt>相互比较（或者，如果该集合没有比较器，则使用自然排序）。
+     *      *       如果无法将<tt> fromKey </tt>或 <tt> toKey </tt>与当前集中的元素进行比较，则实现可能会（但并非必须）引发此异常。
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
+     * @throws IllegalArgumentException 如果起始点位置大于结束点位置，或者超出范围
      */
     NavigableMap<K,V> subMap(K fromKey, boolean fromInclusive,
                              K toKey,   boolean toInclusive);
 
     /**
-     * Returns a view of the portion of this map whose keys are less than (or
-     * equal to, if {@code inclusive} is true) {@code toKey}.  The returned
-     * map is backed by this map, so changes in the returned map are reflected
-     * in this map, and vice-versa.  The returned map supports all optional
-     * map operations that this map supports.
-     *
-     * <p>The returned map will throw an {@code IllegalArgumentException}
-     * on an attempt to insert a key outside its range.
-     *
-     * @param toKey high endpoint of the keys in the returned map
-     * @param inclusive {@code true} if the high endpoint
-     *        is to be included in the returned view
-     * @return a view of the portion of this map whose keys are less than
-     *         (or equal to, if {@code inclusive} is true) {@code toKey}
-     * @throws ClassCastException if {@code toKey} is not compatible
-     *         with this map's comparator (or, if the map has no comparator,
-     *         if {@code toKey} does not implement {@link Comparable}).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code toKey} cannot be compared to keys
-     *         currently in the map.
-     * @throws NullPointerException if {@code toKey} is null
-     *         and this map does not permit null keys
-     * @throws IllegalArgumentException if this map itself has a
-     *         restricted range, and {@code toKey} lies outside the
-     *         bounds of the range
+     * @param toKey 结束节点 key
+     * @param inclusive 判断是否包含结束边界
+     * @return 此地图部分的视图，其键范围为起始节点到 toKey，inclusive决定是否包括边界
+     * @throws ClassCastException 如果无法比较，或者地图没有比较器且参数没有实现Comparable接口。或者参数无法和地图内元素进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     NavigableMap<K,V> headMap(K toKey, boolean inclusive);
 
     /**
-     * Returns a view of the portion of this map whose keys are greater than (or
-     * equal to, if {@code inclusive} is true) {@code fromKey}.  The returned
-     * map is backed by this map, so changes in the returned map are reflected
-     * in this map, and vice-versa.  The returned map supports all optional
-     * map operations that this map supports.
-     *
-     * <p>The returned map will throw an {@code IllegalArgumentException}
-     * on an attempt to insert a key outside its range.
-     *
-     * @param fromKey low endpoint of the keys in the returned map
-     * @param inclusive {@code true} if the low endpoint
-     *        is to be included in the returned view
-     * @return a view of the portion of this map whose keys are greater than
-     *         (or equal to, if {@code inclusive} is true) {@code fromKey}
-     * @throws ClassCastException if {@code fromKey} is not compatible
-     *         with this map's comparator (or, if the map has no comparator,
-     *         if {@code fromKey} does not implement {@link Comparable}).
-     *         Implementations may, but are not required to, throw this
-     *         exception if {@code fromKey} cannot be compared to keys
-     *         currently in the map.
-     * @throws NullPointerException if {@code fromKey} is null
-     *         and this map does not permit null keys
-     * @throws IllegalArgumentException if this map itself has a
-     *         restricted range, and {@code fromKey} lies outside the
-     *         bounds of the range
+     * @param fromKey 起始节点 key
+     * @param inclusive 判断是否包含起始边界
+     * @return 此地图部分的视图，其键范围为 fromKey 到结束，inclusive决定是否包括边界
+     * @throws ClassCastException 如果无法比较，或者地图没有比较器且参数没有实现Comparable接口。或者参数无法和地图内元素进行比较
+     * @throws NullPointerException 如果指定的键为null，并且此映射不允许使用null键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     NavigableMap<K,V> tailMap(K fromKey, boolean inclusive);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>Equivalent to {@code subMap(fromKey, true, toKey, false)}.
-     *
-     * @throws ClassCastException       {@inheritDoc}
-     * @throws NullPointerException     {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * 此地图部分的视图，其键范围为 fromKey（包括边界） 到 toKey（不包括）
+     * @throws ClassCastException       如果无法比较，或者地图没有比较器且参数没有实现Comparable接口。或者参数无法和地图内元素进行比较
+     * @throws NullPointerException     如果指定的键为null，并且此映射不允许使用null键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     SortedMap<K,V> subMap(K fromKey, K toKey);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>Equivalent to {@code headMap(toKey, false)}.
-     *
-     * @throws ClassCastException       {@inheritDoc}
-     * @throws NullPointerException     {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * 此地图部分的视图，其键范围为起始节点到 toKey（不包括）
+     * @throws ClassCastException       如果无法比较，或者地图没有比较器且参数没有实现Comparable接口。或者参数无法和地图内元素进行比较
+     * @throws NullPointerException     如果指定的键为null，并且此映射不允许使用null键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     SortedMap<K,V> headMap(K toKey);
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>Equivalent to {@code tailMap(fromKey, true)}.
-     *
-     * @throws ClassCastException       {@inheritDoc}
-     * @throws NullPointerException     {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * 此地图部分的视图，其键范围为 fromKey（包括边界） 到结束
+     * @throws ClassCastException       如果 fromKey 与该地图的比较器不兼容（或者，如果地图没有比较器，则如果 fromKey 不实现{@link Comparable}）。
+     *                                  如果 fromKey 无法与地图中当前的键进行比较，则实现可能会（但并非必须）抛出此异常。
+     * @throws NullPointerException     如果指定的键为null，并且此映射不允许使用null键
+     * @throws IllegalArgumentException 如果位置超出范围
      */
     SortedMap<K,V> tailMap(K fromKey);
 }
