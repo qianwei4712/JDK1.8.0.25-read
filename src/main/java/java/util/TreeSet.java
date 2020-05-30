@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.util;
 
 /**
@@ -73,22 +48,9 @@ package java.util;
  * exception for its correctness:   <i>the fail-fast behavior of iterators
  * should be used only to detect bugs.</i>
  *
- * <p>This class is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @param <E> the type of elements maintained by this set
- *
- * @author  Josh Bloch
- * @see     Collection
- * @see     Set
- * @see     HashSet
- * @see     Comparable
- * @see     Comparator
- * @see     TreeMap
+ * @param <E> 此集合所维护的元素类型
  * @since   1.2
  */
-
 public class TreeSet<E> extends AbstractSet<E>
     implements NavigableSet<E>, Cloneable, java.io.Serializable
 {
@@ -97,28 +59,18 @@ public class TreeSet<E> extends AbstractSet<E>
      */
     private transient NavigableMap<E,Object> m;
 
-    // Dummy value to associate with an Object in the backing Map
+    // 在 NavigableMap中与key对应的虚拟值，所有 TreeSet公用一个
     private static final Object PRESENT = new Object();
 
     /**
-     * Constructs a set backed by the specified navigable map.
+     * 根据 NavigableMap 构造
      */
     TreeSet(NavigableMap<E,Object> m) {
         this.m = m;
     }
 
     /**
-     * Constructs a new, empty tree set, sorted according to the
-     * natural ordering of its elements.  All elements inserted into
-     * the set must implement the {@link Comparable} interface.
-     * Furthermore, all such elements must be <i>mutually
-     * comparable</i>: {@code e1.compareTo(e2)} must not throw a
-     * {@code ClassCastException} for any elements {@code e1} and
-     * {@code e2} in the set.  If the user attempts to add an element
-     * to the set that violates this constraint (for example, the user
-     * attempts to add a string element to a set whose elements are
-     * integers), the {@code add} call will throw a
-     * {@code ClassCastException}.
+     * 无参构造器，new一个 treeMap
      */
     public TreeSet() {
         this(new TreeMap<E,Object>());
@@ -466,7 +418,6 @@ public class TreeSet<E> extends AbstractSet<E>
     /**
      * Returns a shallow copy of this {@code TreeSet} instance. (The elements
      * themselves are not cloned.)
-     *
      * @return a shallow copy of this set
      */
     @SuppressWarnings("unchecked")
@@ -477,79 +428,38 @@ public class TreeSet<E> extends AbstractSet<E>
         } catch (CloneNotSupportedException e) {
             throw new InternalError(e);
         }
-
         clone.m = new TreeMap<>(m);
         return clone;
     }
 
     /**
-     * Save the state of the {@code TreeSet} instance to a stream (that is,
-     * serialize it).
-     *
-     * @serialData Emits the comparator used to order this set, or
-     *             {@code null} if it obeys its elements' natural ordering
-     *             (Object), followed by the size of the set (the number of
-     *             elements it contains) (int), followed by all of its
-     *             elements (each an Object) in order (as determined by the
-     *             set's Comparator, or by the elements' natural ordering if
-     *             the set has no Comparator).
+     * 写入流
      */
     private void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException {
-        // Write out any hidden stuff
         s.defaultWriteObject();
-
-        // Write out Comparator
         s.writeObject(m.comparator());
-
-        // Write out size
         s.writeInt(m.size());
-
-        // Write out all elements in the proper order.
         for (E e : m.keySet())
             s.writeObject(e);
     }
 
     /**
-     * Reconstitute the {@code TreeSet} instance from a stream (that is,
-     * deserialize it).
+     * 从流中读取
      */
     private void readObject(java.io.ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
-        // Read in any hidden stuff
         s.defaultReadObject();
-
-        // Read in Comparator
         @SuppressWarnings("unchecked")
             Comparator<? super E> c = (Comparator<? super E>) s.readObject();
-
-        // Create backing TreeMap
         TreeMap<E,Object> tm = new TreeMap<>(c);
         m = tm;
-
-        // Read in size
         int size = s.readInt();
-
         tm.readTreeSet(size, s, PRESENT);
     }
 
     /**
-     * Creates a <em><a href="Spliterator.html#binding">late-binding</a></em>
-     * and <em>fail-fast</em> {@link Spliterator} over the elements in this
-     * set.
-     *
-     * <p>The {@code Spliterator} reports {@link Spliterator#SIZED},
-     * {@link Spliterator#DISTINCT}, {@link Spliterator#SORTED}, and
-     * {@link Spliterator#ORDERED}.  Overriding implementations should document
-     * the reporting of additional characteristic values.
-     *
-     * <p>The spliterator's comparator (see
-     * {@link java.util.Spliterator#getComparator()}) is {@code null} if
-     * the tree set's comparator (see {@link #comparator()}) is {@code null}.
-     * Otherwise, the spliterator's comparator is the same as or imposes the
-     * same total ordering as the tree set's comparator.
-     *
-     * @return a {@code Spliterator} over the elements in this set
+     * @return {@code Spliterator}覆盖此集合中的元素
      * @since 1.8
      */
     public Spliterator<E> spliterator() {
