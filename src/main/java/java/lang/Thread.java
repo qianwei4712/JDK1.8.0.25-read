@@ -25,7 +25,7 @@ import sun.security.util.SecurityConstants;
  * 并且，当创建它的线程是一个守护线程时，新线程才是守护线程。
  * <p>
  * 当 Java 虚拟机启动时，通常已经存在了一个非守护线程（这个线程通常会调用某指定类的名为main的方法）。
- * Java 虚拟机将继续执行这个线程，直到发生以下任一情况，发生这两种情况，Java 虚拟机将结束这个线程：
+ * Java 虚拟机将继续执行，直到发生以下任一情况，发生这两种情况，Java 虚拟机将结束：
  * <ul>
  * <li>Runtime类的exit方法被调用，并且安全管理器已经允许进行退出操作。
  * <li>所有非守护线程都已经消亡，消亡原因要么是从run方法返回了，要么是抛出异常了。
@@ -49,6 +49,9 @@ public class Thread implements Runnable {
         registerNatives();
     }
 
+    /**
+     * 线程名
+     */
     private volatile char  name[];
     /**
      * 线程优先级，int类型，范围为1-10，默认为5
@@ -116,12 +119,10 @@ public class Thread implements Runnable {
     /* For generating thread ID */
     private static long threadSeqNumber;
 
-    /* Java thread status for tools,
-     * initialized to indicate thread 'not yet started'
+    /**
+     * Java线程状态工具，默认0-尚未启动
      */
-
     private volatile int threadStatus = 0;
-
 
     private static synchronized long nextThreadID() {
         return ++threadSeqNumber;
@@ -163,84 +164,6 @@ public class Thread implements Runnable {
      */
     public final static int MAX_PRIORITY = 10;
 
-
-
-    /**
-     * A hint to the scheduler that the current thread is willing to yield
-     * its current use of a processor. The scheduler is free to ignore this
-     * hint.
-     *
-     * <p> Yield is a heuristic attempt to improve relative progression
-     * between threads that would otherwise over-utilise a CPU. Its use
-     * should be combined with detailed profiling and benchmarking to
-     * ensure that it actually has the desired effect.
-     *
-     * <p> It is rarely appropriate to use this method. It may be useful
-     * for debugging or testing purposes, where it may help to reproduce
-     * bugs due to race conditions. It may also be useful when designing
-     * concurrency control constructs such as the ones in the
-     * {@link java.util.concurrent.locks} package.
-     */
-    public static native void yield();
-
-    /**
-     * Causes the currently executing thread to sleep (temporarily cease
-     * execution) for the specified number of milliseconds, subject to
-     * the precision and accuracy of system timers and schedulers. The thread
-     * does not lose ownership of any monitors.
-     *
-     * @param  millis
-     *         the length of time to sleep in milliseconds
-     *
-     * @throws  IllegalArgumentException
-     *          if the value of {@code millis} is negative
-     *
-     * @throws  InterruptedException
-     *          if any thread has interrupted the current thread. The
-     *          <i>interrupted status</i> of the current thread is
-     *          cleared when this exception is thrown.
-     */
-    public static native void sleep(long millis) throws InterruptedException;
-
-    /**
-     * Causes the currently executing thread to sleep (temporarily cease
-     * execution) for the specified number of milliseconds plus the specified
-     * number of nanoseconds, subject to the precision and accuracy of system
-     * timers and schedulers. The thread does not lose ownership of any
-     * monitors.
-     *
-     * @param  millis
-     *         the length of time to sleep in milliseconds
-     *
-     * @param  nanos
-     *         {@code 0-999999} additional nanoseconds to sleep
-     *
-     * @throws  IllegalArgumentException
-     *          if the value of {@code millis} is negative, or the value of
-     *          {@code nanos} is not in the range {@code 0-999999}
-     *
-     * @throws  InterruptedException
-     *          if any thread has interrupted the current thread. The
-     *          <i>interrupted status</i> of the current thread is
-     *          cleared when this exception is thrown.
-     */
-    public static void sleep(long millis, int nanos)
-    throws InterruptedException {
-        if (millis < 0) {
-            throw new IllegalArgumentException("timeout value is negative");
-        }
-
-        if (nanos < 0 || nanos > 999999) {
-            throw new IllegalArgumentException(
-                                "nanosecond timeout value out of range");
-        }
-
-        if (nanos >= 500000 || (nanos != 0 && millis == 0)) {
-            millis++;
-        }
-
-        sleep(millis);
-    }
 
     /**
      * Initializes a Thread with the current AccessControlContext.
@@ -303,6 +226,7 @@ public class Thread implements Runnable {
         g.addUnstarted();
 
         this.group = g;
+        //线程的优先级和是否为守护线程，默认继承创建它的父线程
         this.daemon = parent.isDaemon();
         this.priority = parent.getPriority();
         if (security == null || isCCLOverridden(parent.getClass()))
@@ -653,45 +577,38 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Interrupts this thread.
+     * 中断此线程。
+     * <p>线程可以中断自身，这是允许的。在这种情况下，不用进行安全性验证（{@link #checkAccess() checkAccess} 方法检测）
      *
-     * <p> Unless the current thread is interrupting itself, which is
-     * always permitted, the {@link #checkAccess() checkAccess} method
-     * of this thread is invoked, which may cause a {@link
-     * SecurityException} to be thrown.
-     *
-     * <p> If this thread is blocked in an invocation of the {@link
-     * Object#wait() wait()}, {@link Object#wait(long) wait(long)}, or {@link
+     * <p>若当前线程由于 wait() 方法阻塞，或者由于join()、sleep()方法
+     *     If this thread is blocked in an invocation of the {@link Object#wait() wait()}, {@link Object#wait(long) wait(long)}, or {@link
      * Object#wait(long, int) wait(long, int)} methods of the {@link Object}
-     * class, or of the {@link #join()}, {@link #join(long)}, {@link
+     * class,
+     * or of the {@link #join()}, {@link #join(long)}, {@link
      * #join(long, int)}, {@link #sleep(long)}, or {@link #sleep(long, int)},
-     * methods of this class, then its interrupt status will be cleared and it
+     * methods of this class,
+     * then its interrupt status will be cleared and it
      * will receive an {@link InterruptedException}.
-     *
      * <p> If this thread is blocked in an I/O operation upon an {@link
      * java.nio.channels.InterruptibleChannel InterruptibleChannel}
      * then the channel will be closed, the thread's interrupt
      * status will be set, and the thread will receive a {@link
      * java.nio.channels.ClosedByInterruptException}.
-     *
      * <p> If this thread is blocked in a {@link java.nio.channels.Selector}
      * then the thread's interrupt status will be set and it will return
      * immediately from the selection operation, possibly with a non-zero
      * value, just as if the selector's {@link
      * java.nio.channels.Selector#wakeup wakeup} method were invoked.
      *
-     * <p> If none of the previous conditions hold then this thread's interrupt
-     * status will be set. </p>
+     * <p>如果上述条件均不成立，则将设置该线程的中断状态。</p>
+     * <p>中断未运行的线程不必产生任何作用。
      *
-     * <p> Interrupting a thread that is not alive need not have any effect.
-     *
-     * @throws  SecurityException
-     *          if the current thread cannot modify this thread
-     *
+     * @throws  SecurityException 如果当前线程无法修改此线程
      * @revised 6.0
      * @spec JSR-51
      */
     public void interrupt() {
+        //如果调用中断的是线程自身，则不需要进行安全性判断
         if (this != Thread.currentThread())
             checkAccess();
 
@@ -707,8 +624,8 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Tests whether the current thread has been interrupted.  The
-     * <i>interrupted status</i> of the thread is cleared by this method.  In
+     * Tests whether the current thread has been interrupted.
+     * The <i>interrupted status</i> of the thread is cleared by this method.  In
      * other words, if this method were to be called twice in succession, the
      * second call would return false (unless the current thread were
      * interrupted again, after the first call had cleared its interrupted
@@ -745,24 +662,6 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Tests if some Thread has been interrupted.  The interrupted state
-     * is reset or not based on the value of ClearInterrupted that is
-     * passed.
-     */
-    private native boolean isInterrupted(boolean ClearInterrupted);
-
-
-
-    /**
-     * Tests if this thread is alive. A thread is alive if it has
-     * been started and has not yet died.
-     *
-     * @return  <code>true</code> if this thread is alive;
-     *          <code>false</code> otherwise.
-     */
-    public final native boolean isAlive();
-
-    /**
      * 更改此线程的优先级。
      * <p> 首先调用这个线程的checkAccess方法，没有参数。
      * 这可能会导致抛出异常 SecurityException 。
@@ -770,7 +669,6 @@ public class Thread implements Runnable {
      * @param newPriority 需要设置的此线程的优先级
      * @exception  IllegalArgumentException  如果优先级不在 MIN_PRIORITY到 MAX_PRIORITY 。
      * @exception  SecurityException  如果当前线程不能修改此线程。
-     * @see        #checkAccess()
      * @see        #getThreadGroup()
      * @see        ThreadGroup#getMaxPriority()
      */
@@ -793,9 +691,7 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Returns this thread's priority.
-     *
-     * @return  this thread's priority.
+     * @return  返回当前线程的优先级
      * @see     #setPriority
      */
     public final int getPriority() {
@@ -803,31 +699,23 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Changes the name of this thread to be equal to the argument
-     * <code>name</code>.
-     * <p>
-     * First the <code>checkAccess</code> method of this thread is called
-     * with no arguments. This may result in throwing a
-     * <code>SecurityException</code>.
-     *
-     * @param      name   the new name for this thread.
-     * @exception  SecurityException  if the current thread cannot modify this
-     *               thread.
+     * 更改线程名
+     * @param      name  此线程的新名称。
+     * @exception  SecurityException  如果当前线程无法修改此线程。
      * @see        #getName
-     * @see        #checkAccess()
      */
     public final synchronized void setName(String name) {
         checkAccess();
         this.name = name.toCharArray();
+        // 如果线程状态不为0（初始状态），说明线程已经启动
+        // 那就需要调用 native 方法进行更改。
         if (threadStatus != 0) {
             setNativeName(name);
         }
     }
 
     /**
-     * Returns this thread's name.
-     *
-     * @return  this thread's name.
+     * @return  返回线程的名称
      * @see     #setName(String)
      */
     public final String getName() {
@@ -1017,21 +905,12 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Marks this thread as either a {@linkplain #isDaemon daemon} thread
-     * or a user thread. The Java Virtual Machine exits when the only
-     * threads running are all daemon threads.
-     *
-     * <p> This method must be invoked before the thread is started.
-     *
-     * @param  on
-     *         if {@code true}, marks this thread as a daemon thread
-     *
-     * @throws  IllegalThreadStateException
-     *          if this thread is {@linkplain #isAlive alive}
-     *
-     * @throws  SecurityException
-     *          if {@link #checkAccess} determines that the current
-     *          thread cannot modify this thread
+     * 将此线程标记为{@linkplain #isDaemon 守护线程}或用户线程。
+     * 当仅运行的线程都是守护程序线程时，Java虚拟机将退出。
+     * <p> 必须在线程启动之前调用此方法
+     * @param  on 如果{@code true}，则将该线程标记为守护线程
+     * @throws  IllegalThreadStateException 如果此线程是 {@linkplain #isAlive alive}
+     * @throws  SecurityException 如果 {@link #checkAccess} 确定当前线程无法修改此线程
      */
     public final void setDaemon(boolean on) {
         checkAccess();
@@ -1042,10 +921,7 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Tests if this thread is a daemon thread.
-     *
-     * @return  <code>true</code> if this thread is a daemon thread;
-     *          <code>false</code> otherwise.
+     * @return 如果是守护线程则返回 true, 否则就是 false
      * @see     #setDaemon(boolean)
      */
     public final boolean isDaemon() {
@@ -1156,23 +1032,7 @@ public class Thread implements Runnable {
         contextClassLoader = cl;
     }
 
-    /**
-     * Returns <tt>true</tt> if and only if the current thread holds the
-     * monitor lock on the specified object.
-     *
-     * <p>This method is designed to allow a program to assert that
-     * the current thread already holds a specified lock:
-     * <pre>
-     *     assert Thread.holdsLock(obj);
-     * </pre>
-     *
-     * @param  obj the object on which to test lock ownership
-     * @throws NullPointerException if obj is <tt>null</tt>
-     * @return <tt>true</tt> if the current thread holds the monitor lock on
-     *         the specified object.
-     * @since 1.4
-     */
-    public static native boolean holdsLock(Object obj);
+
 
     private static final StackTraceElement[] EMPTY_STACK_TRACE
         = new StackTraceElement[0];
@@ -1369,8 +1229,7 @@ public class Thread implements Runnable {
         return result.booleanValue();
     }
 
-    private native static StackTraceElement[][] dumpThreads(Thread[] threads);
-    private native static Thread[] getThreads();
+
 
     /**
      * Returns the identifier of this Thread.  The thread ID is a positive
@@ -1650,6 +1509,28 @@ public class Thread implements Runnable {
     }
 
 
+    /**
+     * 使当前正在执行的线程进入休眠状态（暂时停止执行），以毫秒为单位，取决于系统定时器和调度程序的精度和准确性。
+     * 并且线程不会丢失监视器锁。
+     * @param  millis 睡眠时间（以毫秒为单位）
+     * @param  nanos {@code 0-999999} 额外的纳秒睡眠
+     * @throws  IllegalArgumentException 如果{@code millis}的值为负，或者{@code nanos}的值不在{@code 0-999999}范围内
+     * @throws  InterruptedException 如果有任何线程中断了当前线程。抛出此异常时，将清除当前线程的中断状态。
+     */
+    public static void sleep(long millis, int nanos) throws InterruptedException {
+        if (millis < 0) {
+            throw new IllegalArgumentException("timeout value is negative");
+        }
+        if (nanos < 0 || nanos > 999999) {
+            throw new IllegalArgumentException(
+                    "nanosecond timeout value out of range");
+        }
+        if (nanos >= 500000 || (nanos != 0 && millis == 0)) {
+            millis++;
+        }
+        sleep(millis);
+    }
+
     // The following three initially uninitialized fields are exclusively
     // managed by class java.util.concurrent.ThreadLocalRandom. These
     // fields are used to build the high-performance PRNGs in the
@@ -1676,16 +1557,56 @@ public class Thread implements Runnable {
      * @return  返回对当前正在执行的线程对象的引用。
      */
     public static native Thread currentThread();
+    /**
+     * @return  测试此线程是否仍然存在。如果一个线程已经启动并且尚未死亡，则该线程是活动的。
+     */
+    public final native boolean isAlive();
+    /**
+     * 使当前正在执行的线程进入休眠状态（暂时停止执行），以毫秒为单位，取决于系统定时器和调度程序的精度和准确性。
+     * 并且线程不会丢失监视器锁。
+     * @param  millis 睡眠时间（以毫秒为单位）
+     * @throws  IllegalArgumentException 如果{@code millis}的值为负
+     * @throws  InterruptedException 如果有任何线程中断了当前线程。抛出此异常时，将清除当前线程的中断状态。
+     */
+    public static native void sleep(long millis) throws InterruptedException;
+    /**
+     * 向处理器提出建议，当前线程愿意让出CPU给其他线程。处理器也可以忽略此提示。
+     * <p>Yield 是一种启发式尝试，旨在提高线程之间的相对进展，否则将过度利用CPU。
+     * 应将其使用与详细的性能分析和基准测试结合起来，以确保它实际上具有所需的效果。
+     * <p>这是一个很少使用的方法。它可能在调试或者测试的时候，或者设计并发控制程序的时候很有用。
+     */
+    public static native void yield();
+    /**
+     * 如果当前线程持有指定锁，则返回true
+     * <p>此方法旨在允许程序断言当前线程已持有指定的锁：
+     * <pre>
+     *     assert Thread.holdsLock(obj);
+     * </pre>
+     * @param  obj 测试锁所有权的对象
+     * @throws NullPointerException 如果obj为 null
+     * @return 如果当前线程持有指定锁，则返回true
+     * @since 1.4
+     */
+    public static native boolean holdsLock(Object obj);
+
+    /**
+     * 测试某些线程是否已被中断。线程的中断状态不受此方法的影响。
+     *
+     * The interrupted state is reset or not based on the value of ClearInterrupted that is passed.
+     */
+    private native boolean isInterrupted(boolean ClearInterrupted);
+
+
     private native void start0();//启动线程
     private native void setPriority0(int newPriority);// 设置优先级
-    private native void stop0(Object o);
-    private native void suspend0();
-    private native void resume0();
-    private native void interrupt0();
-    private native void setNativeName(String name);
+    private native void interrupt0(); //中断线程
+    private native void setNativeName(String name);// 设置线程名
+    private native static StackTraceElement[][] dumpThreads(Thread[] threads);
+    private native static Thread[] getThreads();
 
-
-
+    private native void stop0(Object o);//停止线程，已过时
+    private native void suspend0();//挂起线程，已过时
+    private native void resume0();//恢复挂起的线程，已过时
 
     //****************************************************************************************
     //                                   已过时方法
