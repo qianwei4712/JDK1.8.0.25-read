@@ -74,7 +74,7 @@ public class Thread implements Runnable {
     /* 将要运行的对象. */
     private Runnable target;
 
-    /* The group of this thread */
+    /* 该线程的线程组组 */
     private ThreadGroup group;
 
     /* The context ClassLoader for this thread */
@@ -83,19 +83,17 @@ public class Thread implements Runnable {
     /* The inherited AccessControlContext of this thread */
     private AccessControlContext inheritedAccessControlContext;
 
-    /* For autonumbering anonymous threads. */
+    /* 用于自动编号匿名线程，static 序号 */
     private static int threadInitNumber;
     private static synchronized int nextThreadNum() {
         return threadInitNumber++;
     }
 
-    /* ThreadLocal values pertaining to this thread. This map is maintained
-     * by the ThreadLocal class. */
+    /* ThreadLocal values pertaining to this thread. This map is maintained by the ThreadLocal class. */
     ThreadLocal.ThreadLocalMap threadLocals = null;
 
     /*
-     * InheritableThreadLocal values pertaining to this thread. This map is
-     * maintained by the InheritableThreadLocal class.
+     * InheritableThreadLocal values pertaining to this thread. This map is maintained by the InheritableThreadLocal class.
      */
     ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 
@@ -478,22 +476,17 @@ public class Thread implements Runnable {
      *         If there is not a security manager or {@code
      *         SecurityManager.getThreadGroup()} returns {@code null}, the group
      *         is set to the current thread's thread group.
-     *
      * @param  target
      *         the object whose {@code run} method is invoked when this thread
      *         is started. If {@code null}, this thread's run method is invoked.
-     *
      * @param  name
      *         the name of the new thread
-     *
      * @param  stackSize
      *         the desired stack size for the new thread, or zero to indicate
      *         that this parameter is to be ignored.
-     *
      * @throws  SecurityException
      *          if the current thread cannot create a thread in the specified
      *          thread group
-     *
      * @since 1.4
      */
     public Thread(ThreadGroup group, Runnable target, String name,
@@ -580,32 +573,15 @@ public class Thread implements Runnable {
      * 中断此线程。
      * <p>线程可以中断自身，这是允许的。在这种情况下，不用进行安全性验证（{@link #checkAccess() checkAccess} 方法检测）
      *
-     * <p>若当前线程由于 wait() 方法阻塞，或者由于join()、sleep()方法
-     *     If this thread is blocked in an invocation of the {@link Object#wait() wait()}, {@link Object#wait(long) wait(long)}, or {@link
-     * Object#wait(long, int) wait(long, int)} methods of the {@link Object}
-     * class,
-     * or of the {@link #join()}, {@link #join(long)}, {@link
-     * #join(long, int)}, {@link #sleep(long)}, or {@link #sleep(long, int)},
-     * methods of this class,
-     * then its interrupt status will be cleared and it
-     * will receive an {@link InterruptedException}.
-     * <p> If this thread is blocked in an I/O operation upon an {@link
-     * java.nio.channels.InterruptibleChannel InterruptibleChannel}
-     * then the channel will be closed, the thread's interrupt
-     * status will be set, and the thread will receive a {@link
-     * java.nio.channels.ClosedByInterruptException}.
-     * <p> If this thread is blocked in a {@link java.nio.channels.Selector}
-     * then the thread's interrupt status will be set and it will return
-     * immediately from the selection operation, possibly with a non-zero
-     * value, just as if the selector's {@link
-     * java.nio.channels.Selector#wakeup wakeup} method were invoked.
+     * <p>若当前线程由于 wait() 方法阻塞，或者由于join()、sleep()方法，然后线程的中断状态将被清除，并且将收到 {@link InterruptedException}。
+     * <p>如果线程由于 IO操作（{@link java.nio.channels.InterruptibleChannel InterruptibleChannel}）阻塞，那么通道 channel 将会关闭，
+     * 并且线程的中断状态将被设置，线程将收到一个 {@link java.nio.channels.ClosedByInterruptException} 异常。
+     * <p>如果线程由于在 {@link java.nio.channels.Selector} 中而阻塞，那么线程的中断状态将会被设置，它将立即从选择操作中返回。
+     *该值可能是一个非零值，就像调用选择器的{@link java.nio.channels.Selector＃wakeupakeup}方法一样。
      *
      * <p>如果上述条件均不成立，则将设置该线程的中断状态。</p>
      * <p>中断未运行的线程不必产生任何作用。
-     *
      * @throws  SecurityException 如果当前线程无法修改此线程
-     * @revised 6.0
-     * @spec JSR-51
      */
     public void interrupt() {
         //如果调用中断的是线程自身，则不需要进行安全性判断
@@ -624,40 +600,26 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Tests whether the current thread has been interrupted.
-     * The <i>interrupted status</i> of the thread is cleared by this method.  In
-     * other words, if this method were to be called twice in succession, the
-     * second call would return false (unless the current thread were
-     * interrupted again, after the first call had cleared its interrupted
-     * status and before the second call had examined it).
-     *
-     * <p>A thread interruption ignored because a thread was not alive
-     * at the time of the interrupt will be reflected by this method
-     * returning false.
-     *
-     * @return  <code>true</code> if the current thread has been interrupted;
-     *          <code>false</code> otherwise.
+     * 测试当前线程是否已被中断。
+     * 通过此方法可以清除线程的中断状态.
+     * 换句话说，如果此方法要连续调用两次，则第二个调用将返回false(除非当前线程在第一个调用清除了它的中断状态之后，且在第二个调用对其进行检查之前再次中断)
+     * <p>如果中断时，线程并没有存活，那么该方法返回 false
+     * @return   如果该线程已被中断，返回true；否则返回 false
      * @see #isInterrupted()
-     * @revised 6.0
      */
     public static boolean interrupted() {
+        //清除线程的中断状态
         return currentThread().isInterrupted(true);
     }
 
     /**
-     * Tests whether this thread has been interrupted.  The <i>interrupted
-     * status</i> of the thread is unaffected by this method.
-     *
-     * <p>A thread interruption ignored because a thread was not alive
-     * at the time of the interrupt will be reflected by this method
-     * returning false.
-     *
-     * @return  <code>true</code> if this thread has been interrupted;
-     *          <code>false</code> otherwise.
+     * 测试此线程是否已被中断。线程的中断状态不受此方法的影响。
+     * <p>如果中断时，线程并没有存活，那么该方法返回 false
+     * @return  如果该线程已被中断，返回true；否则返回 false
      * @see     #interrupted()
-     * @revised 6.0
      */
     public boolean isInterrupted() {
+        //不清除中断状态
         return isInterrupted(false);
     }
 
@@ -727,7 +689,7 @@ public class Thread implements Runnable {
      * This method returns null if this thread has died
      * (been stopped).
      *
-     * @return  this thread's thread group.
+     * @return 该线程的线程组。
      */
     public final ThreadGroup getThreadGroup() {
         return group;
@@ -772,9 +734,7 @@ public class Thread implements Runnable {
      *
      * @param  tarray
      *         an array into which to put the list of threads
-     *
      * @return  the number of threads put into the array
-     *
      * @throws  SecurityException
      *          if {@link java.lang.ThreadGroup#checkAccess} determines that
      *          the current thread cannot access its thread group
@@ -786,41 +746,31 @@ public class Thread implements Runnable {
 
 
     /**
-     * Waits at most {@code millis} milliseconds for this thread to
-     * die. A timeout of {@code 0} means to wait forever.
+     * 等待最多为millis毫秒，直至这个线程死亡。 0的超时意味着永远等待。
+     * <p> 此实现使用this.wait调用的循环，条件为this.isAlive 。
+     * 当线程终止时，调用this.notifyAll方法。
+     * 建议应用程序不使用wait ， notify ，或notifyAll 的 Thread 实例上。
      *
-     * <p> This implementation uses a loop of {@code this.wait} calls
-     * conditioned on {@code this.isAlive}. As a thread terminates the
-     * {@code this.notifyAll} method is invoked. It is recommended that
-     * applications not use {@code wait}, {@code notify}, or
-     * {@code notifyAll} on {@code Thread} instances.
-     *
-     * @param  millis
-     *         the time to wait in milliseconds
-     *
-     * @throws  IllegalArgumentException
-     *          if the value of {@code millis} is negative
-     *
-     * @throws  InterruptedException
-     *          if any thread has interrupted the current thread. The
-     *          <i>interrupted status</i> of the current thread is
-     *          cleared when this exception is thrown.
+     * @param  millis 等待时间（以毫秒为单位）
+     * @throws  IllegalArgumentException 如果{@code millis}的值为负
+     * @throws  InterruptedException 如果有任何线程中断了当前线程，抛出此异常时，线程的中断状态将被清除。
      */
-    public final synchronized void join(long millis)
-    throws InterruptedException {
+    public final synchronized void join(long millis) throws InterruptedException {
+        //记录进入方法的时间
         long base = System.currentTimeMillis();
         long now = 0;
-
         if (millis < 0) {
             throw new IllegalArgumentException("timeout value is negative");
         }
-
         if (millis == 0) {
+            //如果线程未死亡，则循环调用 wait
             while (isAlive()) {
                 wait(0);
             }
         } else {
             while (isAlive()) {
+                //第一次进入，now 为0，等待 millis 毫秒
+                //第二次进入，now 为已经等待时间，delay小于等于0时跳出
                 long delay = millis - now;
                 if (delay <= 0) {
                     break;
@@ -832,63 +782,32 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Waits at most {@code millis} milliseconds plus
-     * {@code nanos} nanoseconds for this thread to die.
-     *
-     * <p> This implementation uses a loop of {@code this.wait} calls
-     * conditioned on {@code this.isAlive}. As a thread terminates the
-     * {@code this.notifyAll} method is invoked. It is recommended that
-     * applications not use {@code wait}, {@code notify}, or
-     * {@code notifyAll} on {@code Thread} instances.
-     *
-     * @param  millis
-     *         the time to wait in milliseconds
-     *
-     * @param  nanos
-     *         {@code 0-999999} additional nanoseconds to wait
-     *
-     * @throws  IllegalArgumentException
-     *          if the value of {@code millis} is negative, or the value
-     *          of {@code nanos} is not in the range {@code 0-999999}
-     *
-     * @throws  InterruptedException
-     *          if any thread has interrupted the current thread. The
-     *          <i>interrupted status</i> of the current thread is
-     *          cleared when this exception is thrown.
+     * 等待最多millis毫秒加上 nanos 纳秒。
+     * <p> 此实现使用this.wait调用的循环，条件为this.isAlive 。
+     * 当线程终止时，调用this.notifyAll方法。
+     * 建议应用程序不使用wait ， notify ，或notifyAll 在 Thread 的实例上。
+     * @param  millis 等待时间（以毫秒为单位）
+     * @param  nanos 等待额外的纳秒，取值范围{@code 0-999999}
+     * @throws  IllegalArgumentException 如果值 millis是负数，或的值 nanos不在范围 0-999999
+     * @throws  InterruptedException 如果任何线程已中断当前线程。 当抛出此异常时，当前线程的中断状态将被清除。
      */
-    public final synchronized void join(long millis, int nanos)
-    throws InterruptedException {
-
+    public final synchronized void join(long millis, int nanos) throws InterruptedException {
         if (millis < 0) {
             throw new IllegalArgumentException("timeout value is negative");
         }
-
         if (nanos < 0 || nanos > 999999) {
-            throw new IllegalArgumentException(
-                                "nanosecond timeout value out of range");
+            throw new IllegalArgumentException("nanosecond timeout value out of range");
         }
-
         if (nanos >= 500000 || (nanos != 0 && millis == 0)) {
             millis++;
         }
-
         join(millis);
     }
 
     /**
-     * Waits for this thread to die.
-     *
-     * <p> An invocation of this method behaves in exactly the same
-     * way as the invocation
-     *
-     * <blockquote>
-     * {@linkplain #join(long) join}{@code (0)}
-     * </blockquote>
-     *
-     * @throws  InterruptedException
-     *          if any thread has interrupted the current thread. The
-     *          <i>interrupted status</i> of the current thread is
-     *          cleared when this exception is thrown.
+     * 等待这个线程死亡.
+     * <p>调用此方法的行为方式与调用 join(0) 完全相同
+     * @throws  InterruptedException 如果任何线程中断当前线程。 当抛出此异常时，当前线程的中断状态将被清除。
      */
     public final void join() throws InterruptedException {
         join(0);
@@ -950,7 +869,6 @@ public class Thread implements Runnable {
     /**
      * Returns a string representation of this thread, including the
      * thread's name, priority, and thread group.
-     *
      * @return  a string representation of this thread.
      */
     public String toString() {
@@ -984,10 +902,8 @@ public class Thread implements Runnable {
      * @return  the context ClassLoader for this Thread, or {@code null}
      *          indicating the system class loader (or, failing that, the
      *          bootstrap class loader)
-     *
      * @throws  SecurityException
      *          if the current thread cannot get the context ClassLoader
-     *
      * @since 1.2
      */
     @CallerSensitive
@@ -1018,10 +934,8 @@ public class Thread implements Runnable {
      * @param  cl
      *         the context ClassLoader for this Thread, or null  indicating the
      *         system class loader (or, failing that, the bootstrap class loader)
-     *
      * @throws  SecurityException
      *          if the current thread cannot set the context ClassLoader
-     *
      * @since 1.2
      */
     public void setContextClassLoader(ClassLoader cl) {
@@ -1031,8 +945,6 @@ public class Thread implements Runnable {
         }
         contextClassLoader = cl;
     }
-
-
 
     private static final StackTraceElement[] EMPTY_STACK_TRACE
         = new StackTraceElement[0];
@@ -1230,14 +1142,12 @@ public class Thread implements Runnable {
     }
 
 
-
     /**
-     * Returns the identifier of this Thread.  The thread ID is a positive
-     * <tt>long</tt> number generated when this thread was created.
-     * The thread ID is unique and remains unchanged during its lifetime.
-     * When a thread is terminated, this thread ID may be reused.
-     *
-     * @return this thread's ID.
+     * 返回此线程的 ID标识符.
+     * 线程ID 是一个私有的 long 类型数字，线程创建的时候生成。
+     * 线程ID是唯一的，并且在其生命周期内保持不变.
+     * 当线程终止时，该线程ID可以重用.
+     * @return 返回线程 ID
      * @since 1.5
      */
     public long getId() {
@@ -1388,7 +1298,6 @@ public class Thread implements Runnable {
                 new RuntimePermission("setDefaultUncaughtExceptionHandler")
                     );
         }
-
          defaultUncaughtExceptionHandler = eh;
      }
 
@@ -1425,10 +1334,8 @@ public class Thread implements Runnable {
      * exceptions by having its uncaught exception handler explicitly set.
      * If no such handler is set then the thread's <tt>ThreadGroup</tt>
      * object acts as its handler.
-     * @param eh the object to use as this thread's uncaught exception
-     * handler. If <tt>null</tt> then this thread has no explicit handler.
-     * @throws  SecurityException  if the current thread is not allowed to
-     *          modify this thread.
+     * @param eh the object to use as this thread's uncaught exception handler. If <tt>null</tt> then this thread has no explicit handler.
+     * @throws  SecurityException  if the current thread is not allowed to modify this thread.
      * @see #setDefaultUncaughtExceptionHandler
      * @see ThreadGroup#uncaughtException
      * @since 1.5
@@ -1439,16 +1346,14 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Dispatch an uncaught exception to the handler. This method is
-     * intended to be called only by the JVM.
+     * Dispatch an uncaught exception to the handler. This method is intended to be called only by the JVM.
      */
     private void dispatchUncaughtException(Throwable e) {
         getUncaughtExceptionHandler().uncaughtException(this, e);
     }
 
     /**
-     * Removes from the specified map any keys that have been enqueued
-     * on the specified reference queue.
+     * Removes from the specified map any keys that have been enqueued on the specified reference queue.
      */
     static void processQueue(ReferenceQueue<Class<?>> queue,
                              ConcurrentMap<? extends
@@ -1469,7 +1374,6 @@ public class Thread implements Runnable {
          * a consistent hash code after the referent has been cleared
          */
         private final int hash;
-
         /**
          * Create a new WeakClassKey to the given object, registered
          * with a queue.
@@ -1478,15 +1382,13 @@ public class Thread implements Runnable {
             super(cl, refQueue);
             hash = System.identityHashCode(cl);
         }
-
         /**
-         * Returns the identity hash code of the original referent.
+         * 返回原始参考对象的身份哈希码。
          */
         @Override
         public int hashCode() {
             return hash;
         }
-
         /**
          * Returns true if the given object is this identical
          * WeakClassKey instance, or, if this object's referent has not
@@ -1591,8 +1493,7 @@ public class Thread implements Runnable {
 
     /**
      * 测试某些线程是否已被中断。线程的中断状态不受此方法的影响。
-     *
-     * The interrupted state is reset or not based on the value of ClearInterrupted that is passed.
+     * ClearInterrupted参数决定线程中断状态是否被重置。true则重置。
      */
     private native boolean isInterrupted(boolean ClearInterrupted);
 
