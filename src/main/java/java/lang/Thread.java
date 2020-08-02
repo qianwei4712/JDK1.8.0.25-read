@@ -591,7 +591,7 @@ public class Thread implements Runnable {
         synchronized (blockerLock) {
             Interruptible b = blocker;
             if (b != null) {
-                interrupt0();           // Just to set the interrupt flag
+                interrupt0();           // 只是设置中断标志
                 b.interrupt(this);
                 return;
             }
@@ -614,7 +614,7 @@ public class Thread implements Runnable {
 
     /**
      * 测试此线程是否已被中断。线程的中断状态不受此方法的影响。
-     * <p>如果中断时，线程并没有存活，那么该方法返回 false
+     * <p>如果中断时，线程并没有存活，那么该方法返回 false。意思就是，如果线程还没有 start 启动，或者已经消亡，那么返回依然是 false.
      * @return  如果该线程已被中断，返回true；否则返回 false
      * @see     #interrupted()
      */
@@ -848,15 +848,10 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Determines if the currently running thread has permission to
-     * modify this thread.
-     * <p>
-     * If there is a security manager, its <code>checkAccess</code> method
-     * is called with this thread as its argument. This may result in
-     * throwing a <code>SecurityException</code>.
+     * 确定当前正在运行的线程是否有权限修改此线程。
+     * <p>如果有一个安全管理器，它的checkAccess方法被调用这个线程作为它的参数。 这可能会导致 SecurityException 异常。
      *
-     * @exception  SecurityException  if the current thread is not allowed to
-     *               access this thread.
+     * @exception  SecurityException  如果当前线程不允许访问此线程。
      * @see        SecurityManager#checkAccess(Thread)
      */
     public final void checkAccess() {
@@ -1355,9 +1350,7 @@ public class Thread implements Runnable {
     /**
      * Removes from the specified map any keys that have been enqueued on the specified reference queue.
      */
-    static void processQueue(ReferenceQueue<Class<?>> queue,
-                             ConcurrentMap<? extends
-                             WeakReference<Class<?>>, ?> map)
+    static void processQueue(ReferenceQueue<Class<?>> queue, ConcurrentMap<? extends WeakReference<Class<?>>, ?> map)
     {
         Reference<? extends Class<?>> ref;
         while((ref = queue.poll()) != null) {
@@ -1433,13 +1426,11 @@ public class Thread implements Runnable {
         sleep(millis);
     }
 
-    // The following three initially uninitialized fields are exclusively
-    // managed by class java.util.concurrent.ThreadLocalRandom. These
-    // fields are used to build the high-performance PRNGs in the
-    // concurrent code, and we can not risk accidental false sharing.
-    // Hence, the fields are isolated with @Contended.
+    // 以下三个最初未初始化的字段专门由类java.util.concurrent.ThreadLocalRandom管理。
+    // 这些字段用于在并发代码中构建高性能PRNG，因此我们不会冒意外的错误共享的风险。
+    // 因此，使用@Contended隔离字段。
 
-    /** The current seed for a ThreadLocalRandom */
+    /** ThreadLocalRandom的当前种子 */
     @sun.misc.Contended("tlr")
     long threadLocalRandomSeed;
 
