@@ -173,14 +173,12 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Initializes a Thread.
-     *
+     * 初始化线程。
      * @param g 线程组
      * @param target Runnable 对象，它的 run() 方法将会被调用
      * @param name 新创建的线程的名称
      * @param stackSize 新线程的栈的大小，0表示这个参数被忽略
-     * @param acc the AccessControlContext to inherit, or
-     *            AccessController.getContext() if null
+     * @param acc 要继承的AccessControlContext；如果为null，则为 AccessController.getContext（）
      */
     private void init(ThreadGroup g, Runnable target, String name,
                       long stackSize, AccessControlContext acc) {
@@ -194,15 +192,12 @@ public class Thread implements Runnable {
         SecurityManager security = System.getSecurityManager();
         if (g == null) {
             /* Determine if it's an applet or not */
-
             /* If there is a security manager, ask the security manager
                what to do. */
             if (security != null) {
                 g = security.getThreadGroup();
             }
-
-            /* If the security doesn't have a strong opinion of the matter
-               use the parent thread group. */
+            /* 如果安全性对此问题没有强烈的看法，请使用父线程组. */
             if (g == null) {
                 g = parent.getThreadGroup();
             }
@@ -211,10 +206,7 @@ public class Thread implements Runnable {
         /* checkAccess regardless of whether or not threadgroup is
            explicitly passed in. */
         g.checkAccess();
-
-        /*
-         * Do we have the required permissions?
-         */
+        //我们具有所需的权限吗？
         if (security != null) {
             if (isCCLOverridden(getClass())) {
                 security.checkPermission(SUBCLASS_IMPLEMENTATION_PERMISSION);
@@ -246,11 +238,8 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Throws CloneNotSupportedException as a Thread can not be meaningfully
-     * cloned. Construct a new Thread instead.
-     *
-     * @throws  CloneNotSupportedException
-     *          always
+     * 将CloneNotSupportedException作为线程抛出无法有意义地克隆。 构造一个新的线程。
+     * @throws  CloneNotSupportedException always
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
@@ -258,239 +247,122 @@ public class Thread implements Runnable {
     }
 
     /**
-     * 无参构造，无线程组
-     * Allocates a new {@code Thread} object. This constructor has the same
-     * effect as {@linkplain #Thread(ThreadGroup,Runnable,String) Thread}
-     * {@code (null, null, gname)}, where {@code gname} is a newly generated
-     * name. Automatically generated names are of the form
-     * {@code "Thread-"+}<i>n</i>, where <i>n</i> is an integer.
+     * 无参构造，无线程组；
+     * 分配一个新的Thread对象。
+     * 此构造具有相同的效果Thread (null, null, gname) ，其中gname是新生成的名字。
+     * 自动生成的名称格式为"Thread-"+ n ，其中n为整数。
      */
     public Thread() {
         init(null, null, "Thread-" + nextThreadNum(), 0);
     }
 
     /**
-     * Allocates a new {@code Thread} object. This constructor has the same
-     * effect as {@linkplain #Thread(ThreadGroup,Runnable,String) Thread}
-     * {@code (null, target, gname)}, where {@code gname} is a newly generated
-     * name. Automatically generated names are of the form
-     * {@code "Thread-"+}<i>n</i>, where <i>n</i> is an integer.
-     *
-     * @param  target
-     *         the object whose {@code run} method is invoked when this thread
-     *         is started. If {@code null}, this classes {@code run} method does
-     *         nothing.
+     * 分配一个新的Thread对象。 该构造函数具有与Thread (null, target, gname)相同的效果，其中gname是新生成的名称。
+     * 自动生成的名称格式为"Thread-"+ n ，其中n为整数。
+     * @param  target 启动此线程时调用其run方法的对象。 如果null ，这个类run方法什么都不做。
      */
     public Thread(Runnable target) {
         init(null, target, "Thread-" + nextThreadNum(), 0);
     }
 
     /**
-     * Creates a new Thread that inherits the given AccessControlContext.
-     * This is not a public constructor.
+     * 创建一个继承给定AccessControlContext的新线程。 这不是公共构造函数。
      */
     Thread(Runnable target, AccessControlContext acc) {
         init(null, target, "Thread-" + nextThreadNum(), 0, acc);
     }
 
     /**
-     * Allocates a new {@code Thread} object. This constructor has the same
-     * effect as {@linkplain #Thread(ThreadGroup,Runnable,String) Thread}
-     * {@code (group, target, gname)} ,where {@code gname} is a newly generated
-     * name. Automatically generated names are of the form
-     * {@code "Thread-"+}<i>n</i>, where <i>n</i> is an integer.
-     *
-     * @param  group
-     *         the thread group. If {@code null} and there is a security
-     *         manager, the group is determined by {@linkplain
-     *         SecurityManager#getThreadGroup SecurityManager.getThreadGroup()}.
-     *         If there is not a security manager or {@code
-     *         SecurityManager.getThreadGroup()} returns {@code null}, the group
-     *         is set to the current thread's thread group.
-     *
-     * @param  target
-     *         the object whose {@code run} method is invoked when this thread
-     *         is started. If {@code null}, this thread's run method is invoked.
-     *
-     * @throws  SecurityException
-     *          if the current thread cannot create a thread in the specified
-     *          thread group
+     * 分配一个新的Thread对象。 此构造具有相同的效果Thread (group, target, gname) ，其中gname是新生成的名字。
+     * 自动生成的名称格式为"Thread-"+ n ，其中n为整数。
+     * @param  group  线程组。 如果是null并且有一个安全管理员，那么该组由SecurityManager.getThreadGroup()决定 。
+     *                如果没有安全管理员或SecurityManager.getThreadGroup()返回null ，该组将设置为当前线程的线程组。
+     * @param  target 启动此线程时调用其run方法的对象。 如果null ，这个线程的run方法被调用。
+     * @throws  SecurityException 如果当前线程不能在指定的线程组中创建线程
      */
     public Thread(ThreadGroup group, Runnable target) {
         init(group, target, "Thread-" + nextThreadNum(), 0);
     }
 
     /**
-     * Allocates a new {@code Thread} object. This constructor has the same
-     * effect as {@linkplain #Thread(ThreadGroup,Runnable,String) Thread}
-     * {@code (null, null, name)}.
-     *
-     * @param   name
-     *          the name of the new thread
+     * 分配一个新的Thread对象。 此构造具有相同的效果Thread (null, null, name) 。
+     * @param   name 新线程的名称
      */
     public Thread(String name) {
         init(null, null, name, 0);
     }
 
     /**
-     * Allocates a new {@code Thread} object. This constructor has the same
-     * effect as {@linkplain #Thread(ThreadGroup,Runnable,String) Thread}
-     * {@code (group, null, name)}.
-     *
-     * @param  group
-     *         the thread group. If {@code null} and there is a security
-     *         manager, the group is determined by {@linkplain
-     *         SecurityManager#getThreadGroup SecurityManager.getThreadGroup()}.
-     *         If there is not a security manager or {@code
-     *         SecurityManager.getThreadGroup()} returns {@code null}, the group
-     *         is set to the current thread's thread group.
-     *
-     * @param  name
-     *         the name of the new thread
-     *
-     * @throws  SecurityException
-     *          if the current thread cannot create a thread in the specified
-     *          thread group
+     * 分配一个新的Thread对象。 此构造具有相同的效果Thread (group, null, name) 。
+     * @param  group 线程组。 如果是null并且有一个安全管理员，那么该组由SecurityManager.getThreadGroup()决定 。
+     *               如果没有安全管理员或SecurityManager.getThreadGroup()返回null ，该组将设置为当前线程的线程组。
+     * @param  name 新线程的名称
+     * @throws  SecurityException 如果当前线程无法在指定的线程组中创建线程
      */
     public Thread(ThreadGroup group, String name) {
         init(group, null, name, 0);
     }
 
     /**
-     * Allocates a new {@code Thread} object. This constructor has the same
-     * effect as {@linkplain #Thread(ThreadGroup,Runnable,String) Thread}
-     * {@code (null, target, name)}.
-     *
-     * @param  target
-     *         the object whose {@code run} method is invoked when this thread
-     *         is started. If {@code null}, this thread's run method is invoked.
-     *
-     * @param  name
-     *         the name of the new thread
+     * 分配一个新的Thread对象。 此构造具有相同的效果Thread (null, target, name) 。
+     * @param  target 启动此线程时调用其run方法的对象。 如果null ，则调用此线程的run方法。
+     * @param  name 新线程的名称
      */
     public Thread(Runnable target, String name) {
         init(null, target, name, 0);
     }
 
     /**
-     * Allocates a new {@code Thread} object so that it has {@code target}
-     * as its run object, has the specified {@code name} as its name,
-     * and belongs to the thread group referred to by {@code group}.
+     * 分配一个新的Thread对象，使其具有target作为其运行对象，具有指定的name作为其名称，属于group引用的线程组。
+     * <p>如果有安全管理器，则使用ThreadGroup作为参数调用其checkAccess方法。
+     * <p>此外，它的checkPermission方法由RuntimePermission("enableContextClassLoaderOverride")权限调用，
+     * 直接或间接地由覆盖getContextClassLoader或setContextClassLoader方法的子类的getContextClassLoader setContextClassLoader调用。
+     * <p>新创建的线程的优先级设置为等于创建线程的优先级，即当前正在运行的线程。
+     * 可以使用方法setPriority将优先级改变为新值。
+     * <p>当且仅当创建它的线程当前被标记为守护线程时，新创建的线程才被初始化为守护线程。
+     * 方法setDaemon可以用于改变线程是否是守护进程。
      *
-     * <p>If there is a security manager, its
-     * {@link SecurityManager#checkAccess(ThreadGroup) checkAccess}
-     * method is invoked with the ThreadGroup as its argument.
-     *
-     * <p>In addition, its {@code checkPermission} method is invoked with
-     * the {@code RuntimePermission("enableContextClassLoaderOverride")}
-     * permission when invoked directly or indirectly by the constructor
-     * of a subclass which overrides the {@code getContextClassLoader}
-     * or {@code setContextClassLoader} methods.
-     *
-     * <p>The priority of the newly created thread is set equal to the
-     * priority of the thread creating it, that is, the currently running
-     * thread. The method {@linkplain #setPriority setPriority} may be
-     * used to change the priority to a new value.
-     *
-     * <p>The newly created thread is initially marked as being a daemon
-     * thread if and only if the thread creating it is currently marked
-     * as a daemon thread. The method {@linkplain #setDaemon setDaemon}
-     * may be used to change whether or not a thread is a daemon.
-     *
-     * @param  group
-     *         the thread group. If {@code null} and there is a security
-     *         manager, the group is determined by {@linkplain
-     *         SecurityManager#getThreadGroup SecurityManager.getThreadGroup()}.
-     *         If there is not a security manager or {@code
-     *         SecurityManager.getThreadGroup()} returns {@code null}, the group
-     *         is set to the current thread's thread group.
-     *
-     * @param  target
-     *         the object whose {@code run} method is invoked when this thread
-     *         is started. If {@code null}, this thread's run method is invoked.
-     *
-     * @param  name
-     *         the name of the new thread
-     *
-     * @throws  SecurityException
-     *          if the current thread cannot create a thread in the specified
-     *          thread group or cannot override the context class loader methods.
+     * @param  group 线程组。 如果是null并且有一个安全管理器，则该组由SecurityManager.getThreadGroup()决定 。
+     *               如果没有安全管理员或SecurityManager.getThreadGroup()返回null ，该组将设置为当前线程的线程组。
+     * @param  target 启动此线程时调用其run方法的对象。 如果null ，则调用此线程的run方法。
+     * @param  name  新线程的名称
+     * @throws  SecurityException 如果当前线程不能在指定的线程组中创建线程，或者不能覆盖上下文类加载器方法。
      */
     public Thread(ThreadGroup group, Runnable target, String name) {
         init(group, target, name, 0);
     }
 
     /**
-     * Allocates a new {@code Thread} object so that it has {@code target}
-     * as its run object, has the specified {@code name} as its name,
-     * and belongs to the thread group referred to by {@code group}, and has
-     * the specified <i>stack size</i>.
+     * 分配一个新的Thread对象，以便它具有target作为其运行对象，将指定的name正如其名，以及属于该线程组由称作group ，并具有指定的堆栈大小 。
      *
-     * <p>This constructor is identical to {@link
-     * #Thread(ThreadGroup,Runnable,String)} with the exception of the fact
-     * that it allows the thread stack size to be specified.  The stack size
-     * is the approximate number of bytes of address space that the virtual
-     * machine is to allocate for this thread's stack.  <b>The effect of the
-     * {@code stackSize} parameter, if any, is highly platform dependent.</b>
+     * <p>这个构造函数与Thread(ThreadGroup,Runnable,String)相同，除了它允许指定线程栈大小的事实之外。
+     * 堆栈大小是虚拟机为该线程的堆栈分配的大致的地址空间字节数。 stackSize参数的影响（如果有的话）与平台有关。
      *
-     * <p>On some platforms, specifying a higher value for the
-     * {@code stackSize} parameter may allow a thread to achieve greater
-     * recursion depth before throwing a {@link StackOverflowError}.
-     * Similarly, specifying a lower value may allow a greater number of
-     * threads to exist concurrently without throwing an {@link
-     * OutOfMemoryError} (or other internal error).  The details of
-     * the relationship between the value of the <tt>stackSize</tt> parameter
-     * and the maximum recursion depth and concurrency level are
-     * platform-dependent.  <b>On some platforms, the value of the
-     * {@code stackSize} parameter may have no effect whatsoever.</b>
+     * <p>在某些平台上，指定了一个较高的值stackSize参数可以允许抛出一个前一个线程来实现更大的递归深度StackOverflowError 。
+     * 类似地，指定较低的值可能允许更多数量的线程同时存在，而不会抛出OutOfMemoryError （或其他内部错误）。
+     * 所述stackSize参数的值和最大递归深度和并发水平之间的关系的细节是依赖于平台的。
+     * 在某些平台上，该值stackSize参数可能没有任何效果。
      *
-     * <p>The virtual machine is free to treat the {@code stackSize}
-     * parameter as a suggestion.  If the specified value is unreasonably low
-     * for the platform, the virtual machine may instead use some
-     * platform-specific minimum value; if the specified value is unreasonably
-     * high, the virtual machine may instead use some platform-specific
-     * maximum.  Likewise, the virtual machine is free to round the specified
-     * value up or down as it sees fit (or to ignore it completely).
+     * <p>虚拟机可以自由地对待stackSize参数作为建议。
+     * 如果平台的指定值不合理地低，虚拟机可能会改为使用一些平台特定的最小值; 如果指定的值不合理地高，虚拟机可能会使用一些平台特定的最大值。
+     * 同样，虚拟机可以自由地按照合适的方式向上或向下舍入指定的值（或完全忽略它）。
      *
-     * <p>Specifying a value of zero for the {@code stackSize} parameter will
-     * cause this constructor to behave exactly like the
-     * {@code Thread(ThreadGroup, Runnable, String)} constructor.
+     * <p>对于指定的值为零stackSize参数将使这种构造的行为酷似Thread(ThreadGroup, Runnable, String)构造。
      *
-     * <p><i>Due to the platform-dependent nature of the behavior of this
-     * constructor, extreme care should be exercised in its use.
-     * The thread stack size necessary to perform a given computation will
-     * likely vary from one JRE implementation to another.  In light of this
-     * variation, careful tuning of the stack size parameter may be required,
-     * and the tuning may need to be repeated for each JRE implementation on
-     * which an application is to run.</i>
+     * <p>由于此构造函数的行为依赖于平台依赖性质，因此在使用时应特别小心。 执行给定计算所需的线程栈大小可能会因JRE实现而异。
+     * 鉴于这种变化，可能需要仔细调整堆栈大小参数，并且可能需要对要运行应用程序的每个JRE实现重复调整。
      *
-     * <p>Implementation note: Java platform implementers are encouraged to
-     * document their implementation's behavior with respect to the
-     * {@code stackSize} parameter.
+     * <p>实现注意事项：鼓励Java平台实现者的记录其实施的行为stackSize参数。
      *
-     *
-     * @param  group
-     *         the thread group. If {@code null} and there is a security
-     *         manager, the group is determined by {@linkplain
-     *         SecurityManager#getThreadGroup SecurityManager.getThreadGroup()}.
-     *         If there is not a security manager or {@code
-     *         SecurityManager.getThreadGroup()} returns {@code null}, the group
-     *         is set to the current thread's thread group.
-     * @param  target
-     *         the object whose {@code run} method is invoked when this thread
-     *         is started. If {@code null}, this thread's run method is invoked.
-     * @param  name
-     *         the name of the new thread
-     * @param  stackSize
-     *         the desired stack size for the new thread, or zero to indicate
-     *         that this parameter is to be ignored.
-     * @throws  SecurityException
-     *          if the current thread cannot create a thread in the specified
-     *          thread group
+     * @param  group 线程组。 如果是null并且有一个安全管理器，则该组由SecurityManager.getThreadGroup()决定 。
+     *               如果没有安全管理员或SecurityManager.getThreadGroup()返回null ，该组将设置为当前线程的线程组。
+     * @param  target 启动此线程时调用其run方法的对象。 如果null ，则调用此线程的run方法。
+     * @param  name  新线程的名称
+     * @param  stackSize 新线程所需的堆栈大小，或为零表示此参数将被忽略。
+     * @throws  SecurityException 如果当前线程无法在指定线程组中创建线程
      * @since 1.4
      */
-    public Thread(ThreadGroup group, Runnable target, String name,
-                  long stackSize) {
+    public Thread(ThreadGroup group, Runnable target, String name, long stackSize) {
         init(group, target, name, stackSize);
     }
 
@@ -504,20 +376,14 @@ public class Thread implements Runnable {
      */
     public synchronized void start() {
         /**
-         * This method is not invoked for the main method thread or "system"
-         * group threads created/set up by the VM. Any new functionality added
-         * to this method in the future may have to also be added to the VM.
-         *
-         * A zero status value corresponds to state "NEW".
+         * 这个方法不能作为main启动调用，或者虚拟机内部启动调用
+         * 将来可能会向该方法添加新功能，也可能添加到虚拟机。
+         * 线程0状态代表刚创建，NEW 状态；也就是说，一条线程只能start一次
          */
         if (threadStatus != 0)
             throw new IllegalThreadStateException();
-
-        /* Notify the group that this thread is about to be started
-         * so that it can be added to the group's list of threads
-         * and the group's unstarted count can be decremented. */
+        /* 通知组该线程即将开始，以便可以将其添加到组的线程列表中，并且该组的未启动计数可以减少。*/
         group.add(this);
-
         boolean started = false;
         try {
             start0();
@@ -528,8 +394,7 @@ public class Thread implements Runnable {
                     group.threadStartFailed(this);
                 }
             } catch (Throwable ignore) {
-                /* do nothing. If start0 threw a Throwable then
-                  it will be passed up the call stack */
+                /* 没做什么。如果start0抛出了Throwable，则它将被向上传递到调用堆栈 */
             }
         }
     }
@@ -551,8 +416,7 @@ public class Thread implements Runnable {
     }
 
     /**
-     * This method is called by the system to give a Thread
-     * a chance to clean up before it actually exits.
+     * 系统调用此方法，以使Thread 在实际退出之前有机会进行清理。
      */
     private void exit() {
         if (group != null) {
@@ -945,39 +809,20 @@ public class Thread implements Runnable {
         = new StackTraceElement[0];
 
     /**
-     * Returns an array of stack trace elements representing the stack dump
-     * of this thread.  This method will return a zero-length array if
-     * this thread has not started, has started but has not yet been
-     * scheduled to run by the system, or has terminated.
-     * If the returned array is of non-zero length then the first element of
-     * the array represents the top of the stack, which is the most recent
-     * method invocation in the sequence.  The last element of the array
-     * represents the bottom of the stack, which is the least recent method
-     * invocation in the sequence.
+     * 返回表示此线程的堆栈转储的堆栈跟踪元素数组。
+     * 该方法将返回一个零长度的数组，如果该线程尚未启动，已启动但尚未被计划运行，或已终止。
+     * 如果返回的数组非零长度，则数组的第一个元素表示堆栈的顶部，这是序列中最近的方法调用。
+     * 数组的最后一个元素表示堆栈的底部，这是序列中最近最少的方法调用。
+     * <p>如果有一个安全管理器，并且这个线程不是当前的线程，
+     * 那么安全管理器的checkPermission方法被调用一个RuntimePermission("getStackTrace")权限来查看是否可以获取堆栈跟踪。
+     * <p>在某些情况下，某些虚拟机可能从堆栈跟踪中省略一个或多个堆栈帧。
+     * 在极端情况下，允许没有关于该线程的堆栈跟踪信息的虚拟机从该方法返回零长度数组。
      *
-     * <p>If there is a security manager, and this thread is not
-     * the current thread, then the security manager's
-     * <tt>checkPermission</tt> method is called with a
-     * <tt>RuntimePermission("getStackTrace")</tt> permission
-     * to see if it's ok to get the stack trace.
-     *
-     * <p>Some virtual machines may, under some circumstances, omit one
-     * or more stack frames from the stack trace.  In the extreme case,
-     * a virtual machine that has no stack trace information concerning
-     * this thread is permitted to return a zero-length array from this
-     * method.
-     *
-     * @return an array of <tt>StackTraceElement</tt>,
-     * each represents one stack frame.
-     *
-     * @throws SecurityException
-     *        if a security manager exists and its
-     *        <tt>checkPermission</tt> method doesn't allow
-     *        getting the stack trace of thread.
+     * @return 一个 StackTraceElement的数组，每个代表一个堆栈帧。
+     * @throws SecurityException 如果安全管理器存在，并且其 checkPermission方法不允许获取线程的堆栈跟踪。
      * @see SecurityManager#checkPermission
      * @see RuntimePermission
      * @see Throwable#getStackTrace
-     *
      * @since 1.5
      */
     public StackTraceElement[] getStackTrace() {
@@ -1008,33 +853,16 @@ public class Thread implements Runnable {
     }
 
     /**
-     * Returns a map of stack traces for all live threads.
-     * The map keys are threads and each map value is an array of
-     * <tt>StackTraceElement</tt> that represents the stack dump
-     * of the corresponding <tt>Thread</tt>.
-     * The returned stack traces are in the format specified for
-     * the {@link #getStackTrace getStackTrace} method.
+     * 返回所有活动线程的堆栈跟踪图。
+     * map 键是线程，每个 map 值是StackTraceElement数组，表示对应的Thread的堆栈转储。 返回的堆栈跟踪格式为getStackTrace方法指定的格式。
+     * <p>线程可能正在执行，而此方法被调用。
+     * 每个线程的堆栈跟踪仅表示快照，并且可以在不同时间获取每个堆栈跟踪。
+     * 如果虚拟机没有关于线程的堆栈跟踪信息，则将在地图值中返回零长度的数组。
+     * <p>如果有一个安全管理员，那么安全管理员的checkPermission方法被调用一个RuntimePermission("getStackTrace")权限
+     * 以及RuntimePermission("modifyThreadGroup")权限来查看是否可以获取所有线程的堆栈跟踪。
      *
-     * <p>The threads may be executing while this method is called.
-     * The stack trace of each thread only represents a snapshot and
-     * each stack trace may be obtained at different time.  A zero-length
-     * array will be returned in the map value if the virtual machine has
-     * no stack trace information about a thread.
-     *
-     * <p>If there is a security manager, then the security manager's
-     * <tt>checkPermission</tt> method is called with a
-     * <tt>RuntimePermission("getStackTrace")</tt> permission as well as
-     * <tt>RuntimePermission("modifyThreadGroup")</tt> permission
-     * to see if it is ok to get the stack trace of all threads.
-     *
-     * @return a <tt>Map</tt> from <tt>Thread</tt> to an array of
-     * <tt>StackTraceElement</tt> that represents the stack trace of
-     * the corresponding thread.
-     *
-     * @throws SecurityException
-     *        if a security manager exists and its
-     *        <tt>checkPermission</tt> method doesn't allow
-     *        getting the stack trace of thread.
+     * @return 一个 Map从 Thread到一个 StackTraceElement的数组， 代表相应线程的堆栈跟踪。
+     * @throws SecurityException 如果安全管理器存在，并且其 checkPermission方法不允许获取线程的堆栈跟踪。
      * @see #getStackTrace
      * @see SecurityManager#checkPermission
      * @see RuntimePermission
@@ -1212,21 +1040,14 @@ public class Thread implements Runnable {
     // Added in JSR-166
 
     /**
-     * Interface for handlers invoked when a <tt>Thread</tt> abruptly
-     * terminates due to an uncaught exception.
-     * <p>When a thread is about to terminate due to an uncaught exception
-     * the Java Virtual Machine will query the thread for its
-     * <tt>UncaughtExceptionHandler</tt> using
-     * {@link #getUncaughtExceptionHandler} and will invoke the handler's
-     * <tt>uncaughtException</tt> method, passing the thread and the
-     * exception as arguments.
-     * If a thread has not had its <tt>UncaughtExceptionHandler</tt>
-     * explicitly set, then its <tt>ThreadGroup</tt> object acts as its
-     * <tt>UncaughtExceptionHandler</tt>. If the <tt>ThreadGroup</tt> object
-     * has no
-     * special requirements for dealing with the exception, it can forward
-     * the invocation to the {@linkplain #getDefaultUncaughtExceptionHandler
-     * default uncaught exception handler}.
+     * 当Thread由于未捕获的异常而突然终止时，处理程序的接口被调用。
+     * <p>当一个线程要终止由于未捕获到异常的Java虚拟机将使用查询线程其UncaughtExceptionHandler Thread.getUncaughtExceptionHandler() ，
+     * 将调用处理程序的uncaughtException方法，将线程和异常作为参数。
+     *
+     * 如果一个线程一直没有其UncaughtExceptionHandler明确设置，
+     * 那么它ThreadGroup对象充当其UncaughtExceptionHandler。
+     *
+     * 如果ThreadGroup对象没有处理异常的特殊要求，则可以将调用转发到default uncaught exception handler 。
      *
      * @see #setDefaultUncaughtExceptionHandler
      * @see #setUncaughtExceptionHandler
@@ -1253,33 +1074,16 @@ public class Thread implements Runnable {
     private static volatile UncaughtExceptionHandler defaultUncaughtExceptionHandler;
 
     /**
-     * Set the default handler invoked when a thread abruptly terminates
-     * due to an uncaught exception, and no other handler has been defined
-     * for that thread.
+     * 设置当线程由于未捕获的异常突然终止而调用的默认处理程序，并且没有为该线程定义其他处理程序。
+     * <p>未捕获的异常处理首先由线程控制，然后由线程的ThreadGroup对象控制，最后由默认的未捕获异常处理程序控制。
+     * 如果线程没有明确的未捕获异常处理程序集，并且线程的线程组（包括父线程组）没有专门化其uncaughtException方法，
+     * 那么默认处理程序的uncaughtException方法将被调用。
+     * <p>通过设置默认未捕获的异常处理程序，应用程序可以更改未被捕获的异常处理方式（例如，记录到特定设备或文件），
+     * 这些线程将已经接受了系统提供的任何“默认”行为。
+     * <p>请注意，默认未捕获的异常处理程序通常不会延迟到线程的ThreadGroup对象，因为这可能会导致无限递归。
      *
-     * <p>Uncaught exception handling is controlled first by the thread, then
-     * by the thread's {@link ThreadGroup} object and finally by the default
-     * uncaught exception handler. If the thread does not have an explicit
-     * uncaught exception handler set, and the thread's thread group
-     * (including parent thread groups)  does not specialize its
-     * <tt>uncaughtException</tt> method, then the default handler's
-     * <tt>uncaughtException</tt> method will be invoked.
-     * <p>By setting the default uncaught exception handler, an application
-     * can change the way in which uncaught exceptions are handled (such as
-     * logging to a specific device, or file) for those threads that would
-     * already accept whatever &quot;default&quot; behavior the system
-     * provided.
-     *
-     * <p>Note that the default uncaught exception handler should not usually
-     * defer to the thread's <tt>ThreadGroup</tt> object, as that could cause
-     * infinite recursion.
-     *
-     * @param eh the object to use as the default uncaught exception handler.
-     * If <tt>null</tt> then there is no default handler.
-     *
-     * @throws SecurityException if a security manager is present and it
-     *         denies <tt>{@link RuntimePermission}
-     *         (&quot;setDefaultUncaughtExceptionHandler&quot;)</tt>
+     * @param eh 用作默认未捕获异常处理程序的对象。 如果null那么没有默认处理程序。
+     * @throws SecurityException 如果安全管理器存在，并且否认 RuntimePermission ("setDefaultUncaughtExceptionHandler")
      *
      * @see #setUncaughtExceptionHandler
      * @see #getUncaughtExceptionHandler
@@ -1297,40 +1101,31 @@ public class Thread implements Runnable {
      }
 
     /**
-     * Returns the default handler invoked when a thread abruptly terminates
-     * due to an uncaught exception. If the returned value is <tt>null</tt>,
-     * there is no default.
+     * 返回当线程由于未捕获异常突然终止而调用的默认处理程序。 如果返回值为null ，则没有默认值。
      * @since 1.5
      * @see #setDefaultUncaughtExceptionHandler
-     * @return the default uncaught exception handler for all threads
+     * @return 所有线程的默认未捕获的异常处理程序
      */
     public static UncaughtExceptionHandler getDefaultUncaughtExceptionHandler(){
         return defaultUncaughtExceptionHandler;
     }
 
     /**
-     * Returns the handler invoked when this thread abruptly terminates
-     * due to an uncaught exception. If this thread has not had an
-     * uncaught exception handler explicitly set then this thread's
-     * <tt>ThreadGroup</tt> object is returned, unless this thread
-     * has terminated, in which case <tt>null</tt> is returned.
+     * 返回由于未捕获的异常，此线程突然终止时调用的处理程序。
+     * 如果此线程没有明确设置未捕获的异常处理程序，则返回此线程的ThreadGroup对象，除非此线程已终止，否则返回null 。
      * @since 1.5
-     * @return the uncaught exception handler for this thread
+     * @return 该线程的未捕获的异常处理程序
      */
     public UncaughtExceptionHandler getUncaughtExceptionHandler() {
-        return uncaughtExceptionHandler != null ?
-            uncaughtExceptionHandler : group;
+        return uncaughtExceptionHandler != null ? uncaughtExceptionHandler : group;
     }
 
     /**
-     * Set the handler invoked when this thread abruptly terminates
-     * due to an uncaught exception.
-     * <p>A thread can take full control of how it responds to uncaught
-     * exceptions by having its uncaught exception handler explicitly set.
-     * If no such handler is set then the thread's <tt>ThreadGroup</tt>
-     * object acts as its handler.
-     * @param eh the object to use as this thread's uncaught exception handler. If <tt>null</tt> then this thread has no explicit handler.
-     * @throws  SecurityException  if the current thread is not allowed to modify this thread.
+     * 设置当该线程由于未捕获的异常而突然终止时调用的处理程序。
+     * <p>线程可以完全控制如何通过明确设置其未捕获的异常处理来响应未捕获的异常。
+     * 如果没有设置这样的处理程序，那么线程的ThreadGroup对象将作为其处理程序。
+     * @param eh 用作此线程未捕获的异常处理程序的对象。 如果null那么这个线程没有明确的处理程序。
+     * @throws  SecurityException  如果当前线程不允许修改此线程
      * @see #setDefaultUncaughtExceptionHandler
      * @see ThreadGroup#uncaughtException
      * @since 1.5
@@ -1363,13 +1158,11 @@ public class Thread implements Runnable {
      **/
     static class WeakClassKey extends WeakReference<Class<?>> {
         /**
-         * saved value of the referent's identity hash code, to maintain
-         * a consistent hash code after the referent has been cleared
+         * 引用者身份哈希码的保存值，以在清除引用者后保持一致的哈希码
          */
         private final int hash;
         /**
-         * Create a new WeakClassKey to the given object, registered
-         * with a queue.
+         * 为给定对象创建一个新的WeakClassKey，并在队列中注册。
          */
         WeakClassKey(Class<?> cl, ReferenceQueue<Class<?>> refQueue) {
             super(cl, refQueue);
@@ -1383,10 +1176,8 @@ public class Thread implements Runnable {
             return hash;
         }
         /**
-         * Returns true if the given object is this identical
-         * WeakClassKey instance, or, if this object's referent has not
-         * been cleared, if the given object is another WeakClassKey
-         * instance with the identical non-null referent as this one.
+         * 如果给定的对象是相同的WeakClassKey实例，则返回true；
+         * 或者，如果尚未清除此对象的引用，则如果给定的对象是另一个WeakClassKey实例，且具有与此对象相同的非null引用，则返回true。
          */
         @Override
         public boolean equals(Object obj) {
