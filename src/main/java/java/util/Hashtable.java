@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.util;
 
 import java.io.*;
@@ -115,16 +90,6 @@ import java.util.function.BiFunction;
  * to use {@link java.util.concurrent.ConcurrentHashMap} in place of
  * {@code Hashtable}.
  *
- * @author  Arthur van Hoff
- * @author  Josh Bloch
- * @author  Neal Gafter
- * @see     Object#equals(java.lang.Object)
- * @see     Object#hashCode()
- * @see     Hashtable#rehash()
- * @see     Collection
- * @see     Map
- * @see     HashMap
- * @see     TreeMap
  * @since JDK1.0
  */
 public class Hashtable<K,V>
