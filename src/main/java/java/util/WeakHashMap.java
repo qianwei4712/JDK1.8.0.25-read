@@ -1,151 +1,55 @@
-/*
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.util;
 
 import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-
 /**
- * Hash table based implementation of the <tt>Map</tt> interface, with
- * <em>weak keys</em>.
- * An entry in a <tt>WeakHashMap</tt> will automatically be removed when
- * its key is no longer in ordinary use.  More precisely, the presence of a
- * mapping for a given key will not prevent the key from being discarded by the
- * garbage collector, that is, made finalizable, finalized, and then reclaimed.
- * When a key has been discarded its entry is effectively removed from the map,
- * so this class behaves somewhat differently from other <tt>Map</tt>
- * implementations.
+ * 基于哈希表的Map 接口实现，具有弱引用。
+ * WeakHashMap中的条目的 key 如果不再被使用，那么该条目将会被自动移除。
+ * 更确切地说，给定键的映射的存在不会阻止该键被垃圾收集器丢弃，即被终结化，终结和回收。
+ * 丢弃键后，其条目会从 map 中删除，因此此类的行为与其他 Map 有所不同。
  *
- * <p> Both null values and the null key are supported. This class has
- * performance characteristics similar to those of the <tt>HashMap</tt>
- * class, and has the same efficiency parameters of <em>initial capacity</em>
- * and <em>load factor</em>.
+ * <p>支持null值和空值。 该类具有与HashMap类相似的性能特征 ，具有初始容量和负载因子的相同效率参数 。
+ * <p>像大多数集合类一样，此类不同步。想同步 WeakHashMap可使用 Collections.synchronizedMap方法。
  *
- * <p> Like most collection classes, this class is not synchronized.
- * A synchronized <tt>WeakHashMap</tt> may be constructed using the
- * {@link Collections#synchronizedMap Collections.synchronizedMap}
- * method.
+ * <p>这个类主要用于与主要对象，它们的equals方法测试使用==操作对象标识使用。
+ *  一旦这样的 key 被丢弃，它就永远不会被重新创建，所以不可能在稍后的WeakHashMap中查找该 key。
+ *  这个类将非常适用于equals方法不基于对象标识的关键对象，例如String实例。
+ *  然而，对于这种可重用的关键对象，自动删除已被丢弃密钥的WeakHashMap条目可能会令人困惑。
  *
- * <p> This class is intended primarily for use with key objects whose
- * <tt>equals</tt> methods test for object identity using the
- * <tt>==</tt> operator.  Once such a key is discarded it can never be
- * recreated, so it is impossible to do a lookup of that key in a
- * <tt>WeakHashMap</tt> at some later time and be surprised that its entry
- * has been removed.  This class will work perfectly well with key objects
- * whose <tt>equals</tt> methods are not based upon object identity, such
- * as <tt>String</tt> instances.  With such recreatable key objects,
- * however, the automatic removal of <tt>WeakHashMap</tt> entries whose
- * keys have been discarded may prove to be confusing.
+ * <p>WeakHashMap类的行为部分取决于垃圾收集器的操作，因此几个熟悉（但不是必需）的Map不变量不适用于此类。
+ *  因为垃圾收集器可能随时丢弃 key，所以WeakHashMap可能表现为未知线程静默地删除条目。
+ *  特别是，即使您在WeakHashMap实例上进行同步，也没有调用其变异器方法， size方法可以随时间返回较小的值，
+ *  isEmpty方法可以返回false然后返回true，对于containsKey方法返回true及以后的false对于给定的键，
+ *  对于get方法返回给定键的值，但后来返回null ，为put方法返回null和remove方法返回false以前似乎是在地图，
+ *  以及密钥集的连续检查，值集合和条目集合，以产生相继较少数量的元素。
  *
- * <p> The behavior of the <tt>WeakHashMap</tt> class depends in part upon
- * the actions of the garbage collector, so several familiar (though not
- * required) <tt>Map</tt> invariants do not hold for this class.  Because
- * the garbage collector may discard keys at any time, a
- * <tt>WeakHashMap</tt> may behave as though an unknown thread is silently
- * removing entries.  In particular, even if you synchronize on a
- * <tt>WeakHashMap</tt> instance and invoke none of its mutator methods, it
- * is possible for the <tt>size</tt> method to return smaller values over
- * time, for the <tt>isEmpty</tt> method to return <tt>false</tt> and
- * then <tt>true</tt>, for the <tt>containsKey</tt> method to return
- * <tt>true</tt> and later <tt>false</tt> for a given key, for the
- * <tt>get</tt> method to return a value for a given key but later return
- * <tt>null</tt>, for the <tt>put</tt> method to return
- * <tt>null</tt> and the <tt>remove</tt> method to return
- * <tt>false</tt> for a key that previously appeared to be in the map, and
- * for successive examinations of the key set, the value collection, and
- * the entry set to yield successively smaller numbers of elements.
+ * <p>WeakHashMap中的每个关键对象间接存储为弱引用的对象。
+ * 因此，只有在地图的内部和外部的弱引用之后，key 才会被垃圾收集器清除。
  *
- * <p> Each key object in a <tt>WeakHashMap</tt> is stored indirectly as
- * the referent of a weak reference.  Therefore a key will automatically be
- * removed only after the weak references to it, both inside and outside of the
- * map, have been cleared by the garbage collector.
+ * <p> <strong>实现注意：</strong> WeakHashMap中的值对象由普通的强引用保存。
+ * 因此，应注意确保值对象不直接或间接强烈地引用其自己的键，因为这将阻止键被丢弃。
+ * 注意，值对象可以通过 WeakHashMap本身间接地引用其键;
+ * 也就是说，值对象可能强烈地引用一些其他关键对象，其关联值对象又强烈地引用第一个值对象的键。
+ * 如果 map中的值不依赖于强引用它们的地图，那么处理这种情况的一种方法是在插入之前将值本身包含在WeakReferences之前，
+ * 如： m.put(key, new WeakReference(value)) ，然后在每个get上展开 。
  *
- * <p> <strong>Implementation note:</strong> The value objects in a
- * <tt>WeakHashMap</tt> are held by ordinary strong references.  Thus care
- * should be taken to ensure that value objects do not strongly refer to their
- * own keys, either directly or indirectly, since that will prevent the keys
- * from being discarded.  Note that a value object may refer indirectly to its
- * key via the <tt>WeakHashMap</tt> itself; that is, a value object may
- * strongly refer to some other key object whose associated value object, in
- * turn, strongly refers to the key of the first value object.  If the values
- * in the map do not rely on the map holding strong references to them, one way
- * to deal with this is to wrap values themselves within
- * <tt>WeakReferences</tt> before
- * inserting, as in: <tt>m.put(key, new WeakReference(value))</tt>,
- * and then unwrapping upon each <tt>get</tt>.
- *
- * <p>The iterators returned by the <tt>iterator</tt> method of the collections
- * returned by all of this class's "collection view methods" are
- * <i>fail-fast</i>: if the map is structurally modified at any time after the
- * iterator is created, in any way except through the iterator's own
- * <tt>remove</tt> method, the iterator will throw a {@link
- * ConcurrentModificationException}.  Thus, in the face of concurrent
- * modification, the iterator fails quickly and cleanly, rather than risking
- * arbitrary, non-deterministic behavior at an undetermined time in the future.
- *
- * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
- * as it is, generally speaking, impossible to make any hard guarantees in the
- * presence of unsynchronized concurrent modification.  Fail-fast iterators
- * throw <tt>ConcurrentModificationException</tt> on a best-effort basis.
- * Therefore, it would be wrong to write a program that depended on this
- * exception for its correctness:  <i>the fail-fast behavior of iterators
- * should be used only to detect bugs.</i>
- *
- * <p>This class is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
- *
- * @author      Doug Lea
- * @author      Josh Bloch
- * @author      Mark Reinhold
+ * @param <K> 此 map维护的 key 键的类型
+ * @param <V> 映射 value 值的类型
  * @since       1.2
- * @see         java.util.HashMap
- * @see         java.lang.ref.WeakReference
  */
-public class WeakHashMap<K,V>
-    extends AbstractMap<K,V>
-    implements Map<K,V> {
+public class WeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V> {
 
     /**
-     * The default initial capacity -- MUST be a power of two.
+     * 默认的初始容量 2^4 = 16 - 必须为2的幂。
      */
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
-
     /**
-     * The maximum capacity, used if a higher value is implicitly specified
-     * by either of the constructors with arguments.
-     * MUST be a power of two <= 1<<30.
+     * 最大容量 2^30；如果构造方法指定了更大值，应该使用 2^30。
+     * 容量必须是2的幂并且小于等于 2^30
      */
     private static final int MAXIMUM_CAPACITY = 1 << 30;
 
@@ -175,7 +79,7 @@ public class WeakHashMap<K,V>
     private final float loadFactor;
 
     /**
-     * Reference queue for cleared WeakEntries
+     * 已清除的WeakEntries的参考队列
      */
     private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
 
@@ -266,7 +170,7 @@ public class WeakHashMap<K,V>
     private static final Object NULL_KEY = new Object();
 
     /**
-     * Use NULL_KEY for key if it is null.
+     *如果key为null，请使用 NULL_KEY 作为 key 键。
      */
     private static Object maskNull(Object key) {
         return (key == null) ? NULL_KEY : key;
@@ -305,14 +209,14 @@ public class WeakHashMap<K,V>
     }
 
     /**
-     * Returns index for hash code h.
+     * 返回哈希码h的索引。
      */
     private static int indexFor(int h, int length) {
         return h & (length-1);
     }
 
     /**
-     * Expunges stale entries from the table.
+     * 删除过期条目
      */
     private void expungeStaleEntries() {
         for (Object x; (x = queue.poll()) != null; ) {
@@ -352,10 +256,8 @@ public class WeakHashMap<K,V>
     }
 
     /**
-     * Returns the number of key-value mappings in this map.
-     * This result is a snapshot, and may not reflect unprocessed
-     * entries that will be removed before next attempted access
-     * because they are no longer referenced.
+     * 返回此映射中的键值映射数。
+     * 此结果是一个快照，并且可能不反映在下次尝试访问之前将被删除的未处理条目，因为它们不再被引用。
      */
     public int size() {
         if (size == 0)
@@ -696,8 +598,7 @@ public class WeakHashMap<K,V>
     }
 
     /**
-     * The entries in this hash table extend WeakReference, using its main ref
-     * field as the key.
+     * 该哈希表中的条目使用其主引用字段作为键扩展了WeakReference。.
      */
     private static class Entry<K,V> extends WeakReference<Object> implements Map.Entry<K,V> {
         V value;
@@ -705,11 +606,9 @@ public class WeakHashMap<K,V>
         Entry<K,V> next;
 
         /**
-         * Creates new entry.
+         * 创建新条目
          */
-        Entry(Object key, V value,
-              ReferenceQueue<Object> queue,
-              int hash, Entry<K,V> next) {
+        Entry(Object key, V value, ReferenceQueue<Object> queue, int hash, Entry<K,V> next) {
             super(key, queue);
             this.value = value;
             this.hash  = hash;
