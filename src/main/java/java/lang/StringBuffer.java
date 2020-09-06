@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.lang;
 
 import java.util.Arrays;
@@ -94,8 +69,7 @@ import java.util.Arrays;
  * @see     java.lang.String
  * @since   JDK1.0
  */
- public final class StringBuffer
-    extends AbstractStringBuilder
+ public final class StringBuffer extends AbstractStringBuilder
     implements java.io.Serializable, CharSequence
 {
 

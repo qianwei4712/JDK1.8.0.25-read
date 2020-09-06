@@ -1,28 +1,3 @@
-/*
- * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 package java.lang;
 
 
@@ -73,8 +48,7 @@ package java.lang;
  * @see         java.lang.String
  * @since       1.5
  */
-public final class StringBuilder
-    extends AbstractStringBuilder
+public final class StringBuilder extends AbstractStringBuilder
     implements java.io.Serializable, CharSequence
 {
 
