@@ -1,51 +1,10 @@
-/*
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
-/*
- *
- *
- *
- *
- *
- * Written by Doug Lea with assistance from members of JCP JSR-166
- * Expert Group and released to the public domain, as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- */
-
 package java.util.concurrent.atomic;
 
 /**
- * An {@code AtomicStampedReference} maintains an object reference
- * along with an integer "stamp", that can be updated atomically.
- *
- * <p>Implementation note: This implementation maintains stamped
- * references by creating internal objects representing "boxed"
- * [reference, integer] pairs.
- *
+ * {@code AtomicStampedReference} 维护一个对象引用以及一个可以自动更新的整数“标记”。
+ * <p>实现说明：此实现通过创建表示“装箱”[引用，整数] 对的内部对象来维护标记引用。
  * @since 1.5
- * @author Doug Lea
- * @param <V> The type of object referred to by this reference
+ * @param <V> 此引用所引用的对象类型
  */
 public class AtomicStampedReference<V> {
 
@@ -64,41 +23,33 @@ public class AtomicStampedReference<V> {
     private volatile Pair<V> pair;
 
     /**
-     * Creates a new {@code AtomicStampedReference} with the given
-     * initial values.
-     *
-     * @param initialRef the initial reference
-     * @param initialStamp the initial stamp
+     * 使用给定的初始值创建一个新的 {@code AtomicStampedReference}。
+     * @param initialRef 初始参考
+     * @param initialStamp 最初的版本
      */
     public AtomicStampedReference(V initialRef, int initialStamp) {
         pair = Pair.of(initialRef, initialStamp);
     }
 
     /**
-     * Returns the current value of the reference.
-     *
-     * @return the current value of the reference
+     * @return 参考的当前值
      */
     public V getReference() {
         return pair.reference;
     }
 
     /**
-     * Returns the current value of the stamp.
-     *
-     * @return the current value of the stamp
+     * @return 当前值的版本号
      */
     public int getStamp() {
         return pair.stamp;
     }
 
     /**
-     * Returns the current values of both the reference and the stamp.
-     * Typical usage is {@code int[1] holder; ref = v.get(holder); }.
-     *
-     * @param stampHolder an array of size of at least one.  On return,
-     * {@code stampholder[0]} will hold the value of the stamp.
-     * @return the current value of the reference
+     * 返回引用和版本的当前值。
+     * 典型用法是 {@code int[1] holder; ref = v.get(holder); }.
+     * @param stampHolder 大小至少为一个的数组。返回时，{@code stampholder[0]} 将保存版本的值。
+     * @return 参考的当前值
      */
     public V get(int[] stampHolder) {
         Pair<V> pair = this.pair;
@@ -107,20 +58,13 @@ public class AtomicStampedReference<V> {
     }
 
     /**
-     * Atomically sets the value of both the reference and stamp
-     * to the given update values if the
-     * current reference is {@code ==} to the expected reference
-     * and the current stamp is equal to the expected stamp.
-     *
-     * <p><a href="package-summary.html#weakCompareAndSet">May fail
-     * spuriously and does not provide ordering guarantees</a>, so is
-     * only rarely an appropriate alternative to {@code compareAndSet}.
-     *
-     * @param expectedReference the expected value of the reference
-     * @param newReference the new value for the reference
-     * @param expectedStamp the expected value of the stamp
-     * @param newStamp the new value for the stamp
-     * @return {@code true} if successful
+     * 如果当前引用是对预期引用的 {@code ==} 并且当前标记等于预期标记，则原子地将引用和标记的值设置为给定的更新值。
+     * <p>可能会错误地失败并且不提供排序保证，因此很少是 {@code compareAndSet} 的合适替代品。
+     * @param expectedReference 更新之前的原始值
+     * @param newReference 将要更新的新值
+     * @param expectedStamp 期待更新的标志版本
+     * @param newStamp 将要更新的标志版本
+     * @return {@code true} 如果成功
      */
     public boolean weakCompareAndSet(V   expectedReference,
                                      V   newReference,
@@ -131,16 +75,12 @@ public class AtomicStampedReference<V> {
     }
 
     /**
-     * Atomically sets the value of both the reference and stamp
-     * to the given update values if the
-     * current reference is {@code ==} to the expected reference
-     * and the current stamp is equal to the expected stamp.
-     *
-     * @param expectedReference the expected value of the reference
-     * @param newReference the new value for the reference
-     * @param expectedStamp the expected value of the stamp
-     * @param newStamp the new value for the stamp
-     * @return {@code true} if successful
+     * 如果当前引用是对预期引用的 {@code ==} 并且当前标记等于预期标记，则原子地将引用和标记的值设置为给定的更新值。
+     * @param expectedReference 更新之前的原始值
+     * @param newReference 将要更新的新值
+     * @param expectedStamp 期待更新的标志版本
+     * @param newStamp 将要更新的标志版本
+     * @return {@code true} 如果成功
      */
     public boolean compareAndSet(V   expectedReference,
                                  V   newReference,
@@ -156,10 +96,9 @@ public class AtomicStampedReference<V> {
     }
 
     /**
-     * Unconditionally sets the value of both the reference and stamp.
-     *
-     * @param newReference the new value for the reference
-     * @param newStamp the new value for the stamp
+     * 无条件地设置引用和标记的值。
+     * @param newReference 将要更新的新值
+     * @param newStamp 新的版本值
      */
     public void set(V newReference, int newStamp) {
         Pair<V> current = pair;
@@ -168,17 +107,11 @@ public class AtomicStampedReference<V> {
     }
 
     /**
-     * Atomically sets the value of the stamp to the given update value
-     * if the current reference is {@code ==} to the expected
-     * reference.  Any given invocation of this operation may fail
-     * (return {@code false}) spuriously, but repeated invocation
-     * when the current value holds the expected value and no other
-     * thread is also attempting to set the value will eventually
-     * succeed.
-     *
-     * @param expectedReference the expected value of the reference
-     * @param newStamp the new value for the stamp
-     * @return {@code true} if successful
+     * 如果当前引用是 {@code ==} 到预期引用，则原子地将标记的值设置为给定的更新值。
+     * 此操作的任何给定调用都可能会错误地失败（返回 {@code false}），但是当当前值保持预期值并且没有其他线程也尝试设置该值时，重复调用最终会成功。
+     * @param expectedReference 参考的期望值
+     * @param newStamp 新的版本值
+     * @return {@code true} 如果成功
      */
     public boolean attemptStamp(V expectedReference, int newStamp) {
         Pair<V> current = pair;
@@ -188,7 +121,7 @@ public class AtomicStampedReference<V> {
              casPair(current, Pair.of(expectedReference, newStamp)));
     }
 
-    // Unsafe mechanics
+    // 不安全的机制
 
     private static final sun.misc.Unsafe UNSAFE = sun.misc.Unsafe.getUnsafe();
     private static final long pairOffset =
@@ -203,7 +136,7 @@ public class AtomicStampedReference<V> {
         try {
             return UNSAFE.objectFieldOffset(klazz.getDeclaredField(field));
         } catch (NoSuchFieldException e) {
-            // Convert Exception to corresponding Error
+            // 将异常转换为相应的错误
             NoSuchFieldError error = new NoSuchFieldError(field);
             error.initCause(e);
             throw error;
