@@ -106,17 +106,24 @@ public class CountDownLatch {
             return getState();
         }
 
+        // 试图在共享模式下获取对象状态
         protected int tryAcquireShared(int acquires) {
             return (getState() == 0) ? 1 : -1;
         }
 
+        // 试图设置状态来反映共享模式下的一个释放
         protected boolean tryReleaseShared(int releases) {
             // Decrement count; signal when transition to zero
+            // 无限循环
             for (;;) {
+                // 获取状态
                 int c = getState();
+                // 没有被线程占有
                 if (c == 0)
                     return false;
+                // 下一个状态
                 int nextc = c-1;
+                // CAS操作：比较并且设置成功
                 if (compareAndSetState(c, nextc))
                     return nextc == 0;
             }
